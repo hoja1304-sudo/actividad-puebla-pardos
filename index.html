@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Afiche interactivo | Fundación de la Puebla de los Pardos</title>
+  <style>
+    :root {
+      --green: #082f25;
+      --green-soft: #123f32;
+      --gold: #c99a3d;
+      --cream: #f6efd9;
+      --brown: #6f321d;
+      --ink: #1d1a14;
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.34);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--cream);
+      background:
+        radial-gradient(circle at 18% 10%, rgba(201, 154, 61, 0.18), transparent 30%),
+        linear-gradient(135deg, #061b16 0%, #0d3027 46%, #4b2517 100%);
+    }
+
+    main {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: clamp(14px, 3vw, 34px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.25rem, 3vw, 2.35rem);
+      line-height: 1.05;
+      color: var(--cream);
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .stop-button,
+    .listen-button,
+    .close-button {
+      border: 1px solid rgba(201, 154, 61, 0.75);
+      border-radius: 999px;
+      color: var(--cream);
+      background: linear-gradient(180deg, #8f4a24, var(--brown));
+      cursor: pointer;
+      font: 700 0.95rem system-ui, sans-serif;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+      transition: transform 160ms ease, filter 160ms ease;
+    }
+
+    .stop-button {
+      padding: 11px 16px;
+      white-space: nowrap;
+    }
+
+    .stop-button:hover,
+    .listen-button:hover,
+    .close-button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    .stage {
+      position: relative;
+      width: 100%;
+      background: rgba(246, 239, 217, 0.08);
+      border: 2px solid rgba(201, 154, 61, 0.75);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .poster {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+    }
+
+    .hotspot {
+      position: absolute;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      background: rgba(201, 154, 61, 0.01);
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .hotspot:hover,
+    .hotspot:focus-visible,
+    .hotspot.active {
+      outline: none;
+      border-color: var(--gold);
+      background: rgba(201, 154, 61, 0.16);
+      box-shadow: inset 0 0 0 2px rgba(8, 47, 37, 0.42), 0 0 18px rgba(201, 154, 61, 0.42);
+    }
+
+    .card {
+      position: fixed;
+      right: max(18px, calc((100vw - 1180px) / 2 + 26px));
+      bottom: 24px;
+      z-index: 10;
+      width: min(420px, calc(100vw - 28px));
+      padding: 22px;
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255, 252, 238, 0.96), rgba(244, 229, 190, 0.97)),
+        var(--cream);
+      box-shadow: var(--shadow);
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .card.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .card h2 {
+      margin: 0 34px 8px 0;
+      color: var(--green);
+      font-size: clamp(1.35rem, 4vw, 1.9rem);
+      line-height: 1.05;
+    }
+
+    .card p {
+      margin: 0 0 18px;
+      font: 1rem/1.55 system-ui, sans-serif;
+      color: #2c2519;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .listen-button {
+      padding: 10px 15px;
+      background: linear-gradient(180deg, #164b3c, var(--green));
+    }
+
+    .close-button {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .hint {
+      margin: 12px 0 0;
+      color: rgba(246, 239, 217, 0.82);
+      font: 0.95rem/1.45 system-ui, sans-serif;
+    }
+
+    @media (max-width: 700px) {
+      main {
+        padding: 10px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .stop-button {
+        width: 100%;
+      }
+
+      .stage {
+        border-width: 1px;
+        border-radius: 0;
+      }
+
+      .hotspot {
+        border-radius: 5px;
+      }
+
+      .card {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: auto;
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topbar">
+      <h1>Fundación de la Puebla de los Pardos</h1>
+      <button class="stop-button" type="button" id="stopSpeech">Detener narración</button>
+    </div>
+
+    <section class="stage" aria-label="Afiche histórico interactivo">
+      <img
+        class="poster"
+        src="afiche.png"
+        alt="Afiche sobre la Fundación de la Puebla de los Pardos en Cartago, Costa Rica, 1650">
+
+      <button class="hotspot" type="button" data-zone="timeline" style="left: 1.1%; top: 18.2%; width: 97.8%; height: 16.2%;" aria-label="Línea de tiempo"></button>
+      <button class="hotspot" type="button" data-zone="contexto" style="left: 1.1%; top: 34.8%; width: 97.8%; height: 14.2%;" aria-label="Contexto previo"></button>
+      <button class="hotspot" type="button" data-zone="orden" style="left: 1.1%; top: 49.2%; width: 97.8%; height: 14.3%;" aria-label="Orden de fundación"></button>
+      <button class="hotspot" type="button" data-zone="desarrollo" style="left: 1.1%; top: 63.8%; width: 97.8%; height: 14.8%;" aria-label="Desarrollo inicial"></button>
+      <button class="hotspot" type="button" data-zone="vida" style="left: 1.1%; top: 78.8%; width: 97.8%; height: 12.1%;" aria-label="Vida e integración social"></button>
+      <button class="hotspot" type="button" data-zone="idea" style="left: 35.4%; top: 91.6%; width: 63.4%; height: 7.1%;" aria-label="Idea clave"></button>
+    </section>
+
+    <p class="hint">Toca o pasa el mouse sobre una sección del afiche para explorarla.</p>
+  </main>
+
+  <aside class="card" id="infoCard" aria-live="polite" aria-hidden="true">
+    <button class="close-button" type="button" id="closeCard" aria-label="Cerrar tarjeta">×</button>
+    <h2 id="cardTitle"></h2>
+    <p id="cardText"></p>
+    <div class="card-actions">
+      <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
+    </div>
+  </aside>
+
+  <script>
+    const zones = {
+      timeline: {
+        title: "Línea de tiempo",
+        text: "Resume los hechos principales entre 1629 y 1679. Ayuda a ver cómo la población afrodescendiente libre pasó de vivir dispersa a formar un espacio organizado en Cartago.",
+        speech: "En 1629, negros libres, mulatos y pardos vivían dispersos en los montes orientales de Cartago, especialmente en La Gotera, en los ejidos de la ciudad. El 10 de diciembre de 1650, el gobernador interino Juan Fernández de Salinas ordenó que pardos, mulatos y negros libres se concentraran en un solar específico en La Gotera, a una legua del centro urbano. En 1651, se asignaron 100 varas de tierra para el poblado, con capilla y cofradía. En 1653, se erigió la cofradía de la Virgen de los Ángeles, vinculada al hallazgo de La Negrita por la mulata Juana Pereira hacia 1635. Finalmente, en 1679, Miguel de Alvarado, figura como alcalde, muestra la integración de pobladores en oficios urbanos, aunque todavía existía segregación."
+      },
+      contexto: {
+        title: "Contexto previo",
+        text: "Antes de 1650, negros libres, mulatos y pardos habitaban zonas como La Gotera. Su dispersión preocupaba a las autoridades coloniales y generó intentos de control religioso y social.",
+        speech: "Antes de 1650, negros libres, mulatos y pardos habitaban zonas como La Gotera. Su dispersión preocupaba a las autoridades coloniales y generó intentos de control religioso y social."
+      },
+      orden: {
+        title: "Orden de fundación",
+        text: "El 10 de diciembre de 1650 se ordenó concentrar a esta población en un solar específico. La medida buscaba vigilar, evangelizar y separar a estos grupos del centro urbano.",
+        speech: "El 10 de diciembre de 1650 se ordenó concentrar a esta población en un solar específico. La medida buscaba vigilar, evangelizar y separar a estos grupos del centro urbano."
+      },
+      desarrollo: {
+        title: "Desarrollo inicial",
+        text: "En 1651 se asignaron tierras para el poblado y luego surgieron una capilla y una cofradía. Estas instituciones ayudaron a organizar la vida religiosa, económica y comunitaria.",
+        speech: "En 1651 se asignaron tierras para el poblado y luego surgieron una capilla y una cofradía. Estas instituciones ayudaron a organizar la vida religiosa, económica y comunitaria."
+      },
+      vida: {
+        title: "Vida e integración social",
+        text: "Aunque existía segregación, algunos habitantes se integraron a oficios urbanos. El caso de Miguel de Alvarado, alcalde en 1679, muestra participación social dentro de Cartago.",
+        speech: "Aunque existía segregación, algunos habitantes se integraron a oficios urbanos. El caso de Miguel de Alvarado, alcalde en 1679, muestra participación social dentro de Cartago."
+      },
+      idea: {
+        title: "Idea clave",
+        text: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
+        speech: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social."
+      }
+    };
+
+    const card = document.querySelector("#infoCard");
+    const cardTitle = document.querySelector("#cardTitle");
+    const cardText = document.querySelector("#cardText");
+    const hotspots = document.querySelectorAll(".hotspot");
+    let activeZone = null;
+    let availableVoices = [];
+
+    function loadVoices() {
+      if ("speechSynthesis" in window) {
+        availableVoices = window.speechSynthesis.getVoices();
+      }
+    }
+
+    function getSpanishVoice() {
+      const preferredLangs = ["es-CR", "es-419", "es-MX", "es-US", "es-ES"];
+      const normalizedVoices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
+
+      for (const lang of preferredLangs) {
+        const exactVoice = normalizedVoices.find((voice) => voice.lang.toLowerCase() === lang.toLowerCase());
+        if (exactVoice) {
+          return exactVoice;
+        }
+      }
+
+      return normalizedVoices.find((voice) => voice.lang.toLowerCase().startsWith("es")) || null;
+    }
+
+    function stopSpeech() {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function speak(zone) {
+      if (!("speechSynthesis" in window)) {
+        return;
+      }
+
+      stopSpeech();
+      const utterance = new SpeechSynthesisUtterance(zone.speech || zone.text);
+      utterance.lang = "es-CR";
+      const spanishVoice = getSpanishVoice();
+      if (spanishVoice) {
+        utterance.voice = spanishVoice;
+        utterance.lang = spanishVoice.lang;
+      }
+      utterance.rate = 0.92;
+      utterance.pitch = 0.95;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function openCard(key, shouldSpeak = true) {
+      const zone = zones[key];
+      activeZone = key;
+      cardTitle.textContent = zone.title;
+      cardText.textContent = zone.text;
+      card.classList.add("open");
+      card.setAttribute("aria-hidden", "false");
+
+      hotspots.forEach((hotspot) => {
+        hotspot.classList.toggle("active", hotspot.dataset.zone === key);
+      });
+
+      if (shouldSpeak) {
+        speak(zone);
+      }
+    }
+
+    function closeCard() {
+      stopSpeech();
+      activeZone = null;
+      card.classList.remove("open");
+      card.setAttribute("aria-hidden", "true");
+      hotspots.forEach((hotspot) => hotspot.classList.remove("active"));
+    }
+
+    hotspots.forEach((hotspot) => {
+      hotspot.addEventListener("click", () => openCard(hotspot.dataset.zone));
+      hotspot.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openCard(hotspot.dataset.zone);
+        }
+      });
+    });
+
+    document.querySelector("#closeCard").addEventListener("click", closeCard);
+    document.querySelector("#stopSpeech").addEventListener("click", stopSpeech);
+    document.querySelector("#listenAgain").addEventListener("click", () => {
+      if (activeZone) {
+        speak(zones[activeZone]);
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeCard();
+      }
+    });
+
+    loadVoices();
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    }
+  </script>
+</body>
+</html>
