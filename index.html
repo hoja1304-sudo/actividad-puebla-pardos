@@ -43,6 +43,34 @@
       margin-bottom: 16px;
     }
 
+    .voice-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .voice-label {
+      display: grid;
+      gap: 4px;
+      color: rgba(246, 239, 217, 0.86);
+      font: 700 0.8rem system-ui, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .voice-select {
+      width: min(280px, 54vw);
+      min-height: 40px;
+      border: 1px solid rgba(201, 154, 61, 0.75);
+      border-radius: 999px;
+      padding: 8px 36px 8px 14px;
+      color: var(--cream);
+      background: #123f32;
+      font: 700 0.92rem system-ui, sans-serif;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+    }
+
     h1 {
       margin: 0;
       font-size: clamp(1.25rem, 3vw, 2.35rem);
@@ -188,7 +216,13 @@
         flex-direction: column;
       }
 
+      .voice-tools,
       .stop-button {
+        width: 100%;
+      }
+
+      .voice-label,
+      .voice-select {
         width: 100%;
       }
 
@@ -215,7 +249,15 @@
   <main>
     <div class="topbar">
       <h1>Fundación de la Puebla de los Pardos</h1>
-      <button class="stop-button" type="button" id="stopSpeech">Detener narración</button>
+      <div class="voice-tools">
+        <label class="voice-label" for="voiceSelect">
+          Voz
+          <select class="voice-select" id="voiceSelect" aria-label="Seleccionar voz en español">
+            <option value="">Cargando voces...</option>
+          </select>
+        </label>
+        <button class="stop-button" type="button" id="stopSpeech">Detener narración</button>
+      </div>
     </div>
 
     <section class="stage" aria-label="Afiche histórico interactivo">
@@ -281,28 +323,84 @@
     const card = document.querySelector("#infoCard");
     const cardTitle = document.querySelector("#cardTitle");
     const cardText = document.querySelector("#cardText");
+    const voiceSelect = document.querySelector("#voiceSelect");
     const hotspots = document.querySelectorAll(".hotspot");
     let activeZone = null;
     let availableVoices = [];
+    let selectedVoiceURI = localStorage.getItem("pueblaPardosVoiceURI") || "";
+
+    function scoreSpanishVoice(voice) {
+      const lang = voice.lang.toLowerCase();
+      const name = voice.name.toLowerCase();
+      let score = 0;
+
+      if (lang === "es-cr") score += 100;
+      if (name.includes("costa rica") || name.includes("costarricense")) score += 95;
+      if (lang === "es-419") score += 80;
+      if (name.includes("latin") || name.includes("latino")) score += 70;
+      if (lang === "es-mx" || lang === "es-us") score += 45;
+      if (lang.startsWith("es")) score += 20;
+      if (voice.localService) score += 4;
+      if (lang === "es-es") score -= 8;
+
+      return score;
+    }
 
     function loadVoices() {
       if ("speechSynthesis" in window) {
         availableVoices = window.speechSynthesis.getVoices();
+        updateVoiceSelect();
       }
     }
 
     function getSpanishVoice() {
-      const preferredLangs = ["es-CR", "es-419", "es-MX", "es-US", "es-ES"];
       const normalizedVoices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
+      const selectedVoice = normalizedVoices.find((voice) => voice.voiceURI === selectedVoiceURI);
 
-      for (const lang of preferredLangs) {
-        const exactVoice = normalizedVoices.find((voice) => voice.lang.toLowerCase() === lang.toLowerCase());
-        if (exactVoice) {
-          return exactVoice;
-        }
+      if (selectedVoice) {
+        return selectedVoice;
       }
 
-      return normalizedVoices.find((voice) => voice.lang.toLowerCase().startsWith("es")) || null;
+      const spanishVoices = normalizedVoices
+        .filter((voice) => voice.lang.toLowerCase().startsWith("es"))
+        .sort((a, b) => scoreSpanishVoice(b) - scoreSpanishVoice(a));
+
+      const bestVoice = spanishVoices[0] || null;
+      if (bestVoice) {
+        selectedVoiceURI = bestVoice.voiceURI;
+        localStorage.setItem("pueblaPardosVoiceURI", selectedVoiceURI);
+      }
+
+      return bestVoice;
+    }
+
+    function updateVoiceSelect() {
+      const spanishVoices = availableVoices
+        .filter((voice) => voice.lang.toLowerCase().startsWith("es"))
+        .sort((a, b) => scoreSpanishVoice(b) - scoreSpanishVoice(a));
+
+      voiceSelect.innerHTML = "";
+
+      if (!spanishVoices.length) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "Voz predeterminada del navegador";
+        voiceSelect.appendChild(option);
+        return;
+      }
+
+      if (!selectedVoiceURI || !spanishVoices.some((voice) => voice.voiceURI === selectedVoiceURI)) {
+        selectedVoiceURI = spanishVoices[0].voiceURI;
+        localStorage.setItem("pueblaPardosVoiceURI", selectedVoiceURI);
+      }
+
+      spanishVoices.forEach((voice) => {
+        const option = document.createElement("option");
+        option.value = voice.voiceURI;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        option.selected = voice.voiceURI === selectedVoiceURI;
+        voiceSelect.appendChild(option);
+      });
     }
 
     function stopSpeech() {
@@ -367,6 +465,15 @@
     document.querySelector("#closeCard").addEventListener("click", closeCard);
     document.querySelector("#stopSpeech").addEventListener("click", stopSpeech);
     document.querySelector("#listenAgain").addEventListener("click", () => {
+      if (activeZone) {
+        speak(zones[activeZone]);
+      }
+    });
+
+    voiceSelect.addEventListener("change", () => {
+      selectedVoiceURI = voiceSelect.value;
+      localStorage.setItem("pueblaPardosVoiceURI", selectedVoiceURI);
+
       if (activeZone) {
         speak(zones[activeZone]);
       }
