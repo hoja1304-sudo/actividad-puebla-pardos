@@ -184,6 +184,33 @@
       flex-wrap: wrap;
     }
 
+    .video-panel {
+      display: none;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(111, 50, 29, 0.25);
+    }
+
+    .video-panel.open {
+      display: block;
+    }
+
+    .video-panel h3 {
+      margin: 0 0 8px;
+      color: var(--brown);
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .video-panel video {
+      display: block;
+      width: 100%;
+      max-height: 48vh;
+      border: 2px solid rgba(201, 154, 61, 0.75);
+      border-radius: 8px;
+      background: #0d1815;
+    }
+
     .listen-button {
       padding: 10px 15px;
       background: linear-gradient(180deg, #164b3c, var(--green));
@@ -284,6 +311,13 @@
     <div class="card-actions">
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
     </div>
+    <div class="video-panel" id="videoPanel" aria-hidden="true">
+      <h3 id="videoTitle">Video complementario</h3>
+      <video id="ideaVideo" controls preload="metadata">
+        <source id="videoSource" src="" type="video/mp4">
+        Tu navegador no puede reproducir este video.
+      </video>
+    </div>
   </aside>
 
   <script>
@@ -316,13 +350,20 @@
       idea: {
         title: "Idea clave",
         text: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
-        speech: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social."
+        speech: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
+        videoTitle: "Historia de la Puebla de los Ángeles",
+        videoLocalSrc: "Historia de la Puebla de los Ángeles (1751)_1080p.mp4",
+        videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/Historia%20de%20la%20Puebla%20de%20los%20%C3%81ngeles%20%281751%29_1080p.mp4"
       }
     };
 
     const card = document.querySelector("#infoCard");
     const cardTitle = document.querySelector("#cardTitle");
     const cardText = document.querySelector("#cardText");
+    const videoPanel = document.querySelector("#videoPanel");
+    const videoTitle = document.querySelector("#videoTitle");
+    const ideaVideo = document.querySelector("#ideaVideo");
+    const videoSource = document.querySelector("#videoSource");
     const voiceSelect = document.querySelector("#voiceSelect");
     const hotspots = document.querySelectorAll(".hotspot");
     let activeZone = null;
@@ -409,6 +450,34 @@
       }
     }
 
+    function stopVideo() {
+      ideaVideo.pause();
+      ideaVideo.currentTime = 0;
+    }
+
+    function hideVideo() {
+      stopVideo();
+      videoPanel.classList.remove("open");
+      videoPanel.setAttribute("aria-hidden", "true");
+    }
+
+    function showVideo(zone) {
+      const videoSrc = location.protocol === "file:" ? zone.videoLocalSrc : zone.videoWebSrc;
+
+      if (!videoSrc) {
+        hideVideo();
+        return;
+      }
+
+      videoTitle.textContent = zone.videoTitle || "Video complementario";
+      if (videoSource.getAttribute("src") !== videoSrc) {
+        videoSource.setAttribute("src", videoSrc);
+        ideaVideo.load();
+      }
+      videoPanel.classList.add("open");
+      videoPanel.setAttribute("aria-hidden", "false");
+    }
+
     function speak(zone) {
       if (!("speechSynthesis" in window)) {
         return;
@@ -424,6 +493,11 @@
       }
       utterance.rate = 0.92;
       utterance.pitch = 0.95;
+      utterance.onend = () => {
+        if (activeZone && zones[activeZone] === zone && (zone.videoLocalSrc || zone.videoWebSrc)) {
+          showVideo(zone);
+        }
+      };
       window.speechSynthesis.speak(utterance);
     }
 
@@ -432,6 +506,7 @@
       activeZone = key;
       cardTitle.textContent = zone.title;
       cardText.textContent = zone.text;
+      hideVideo();
       card.classList.add("open");
       card.setAttribute("aria-hidden", "false");
 
@@ -446,6 +521,7 @@
 
     function closeCard() {
       stopSpeech();
+      stopVideo();
       activeZone = null;
       card.classList.remove("open");
       card.setAttribute("aria-hidden", "true");
