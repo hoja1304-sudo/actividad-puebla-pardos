@@ -184,6 +184,16 @@
       flex-wrap: wrap;
     }
 
+    .video-button {
+      display: none;
+      padding: 10px 15px;
+      background: linear-gradient(180deg, #8f4a24, var(--brown));
+    }
+
+    .video-button.show {
+      display: inline-flex;
+    }
+
     .video-panel {
       display: none;
       margin-top: 18px;
@@ -310,6 +320,7 @@
     <p id="cardText"></p>
     <div class="card-actions">
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
+      <button class="listen-button video-button" type="button" id="showVideo">Ver video</button>
     </div>
     <div class="video-panel" id="videoPanel" aria-hidden="true">
       <h3 id="videoTitle">Video complementario</h3>
@@ -352,8 +363,8 @@
         text: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
         speech: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
         videoTitle: "Historia de la Puebla de los Ángeles",
-        videoLocalSrc: "Historia de la Puebla de los Ángeles (1751)_1080p.mp4",
-        videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/Historia%20de%20la%20Puebla%20de%20los%20%C3%81ngeles%20%281751%29_1080p.mp4"
+        videoLocalSrc: "video-puebla-angeles.mp4",
+        videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/video-puebla-angeles.mp4"
       }
     };
 
@@ -364,6 +375,7 @@
     const videoTitle = document.querySelector("#videoTitle");
     const ideaVideo = document.querySelector("#ideaVideo");
     const videoSource = document.querySelector("#videoSource");
+    const showVideoButton = document.querySelector("#showVideo");
     const voiceSelect = document.querySelector("#voiceSelect");
     const hotspots = document.querySelectorAll(".hotspot");
     let activeZone = null;
@@ -478,6 +490,18 @@
       videoPanel.setAttribute("aria-hidden", "false");
     }
 
+    function showAndPlayVideo(zone) {
+      stopSpeech();
+      showVideo(zone);
+
+      const playPromise = ideaVideo.play();
+      if (playPromise) {
+        playPromise.catch(() => {
+          videoPanel.classList.add("open");
+        });
+      }
+    }
+
     function speak(zone) {
       if (!("speechSynthesis" in window)) {
         return;
@@ -507,6 +531,7 @@
       cardTitle.textContent = zone.title;
       cardText.textContent = zone.text;
       hideVideo();
+      showVideoButton.classList.toggle("show", Boolean(zone.videoLocalSrc || zone.videoWebSrc));
       card.classList.add("open");
       card.setAttribute("aria-hidden", "false");
 
@@ -525,6 +550,7 @@
       activeZone = null;
       card.classList.remove("open");
       card.setAttribute("aria-hidden", "true");
+      showVideoButton.classList.remove("show");
       hotspots.forEach((hotspot) => hotspot.classList.remove("active"));
     }
 
@@ -543,6 +569,12 @@
     document.querySelector("#listenAgain").addEventListener("click", () => {
       if (activeZone) {
         speak(zones[activeZone]);
+      }
+    });
+
+    showVideoButton.addEventListener("click", () => {
+      if (activeZone) {
+        showAndPlayVideo(zones[activeZone]);
       }
     });
 
