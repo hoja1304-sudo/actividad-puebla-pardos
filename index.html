@@ -82,14 +82,40 @@
     .stop-button,
     .listen-button,
     .close-button {
-      border: 1px solid rgba(201, 154, 61, 0.75);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      border: 1px solid rgba(255, 219, 136, 0.72);
       border-radius: 999px;
       color: var(--cream);
-      background: linear-gradient(180deg, #8f4a24, var(--brown));
+      background:
+        linear-gradient(180deg, rgba(255, 229, 163, 0.2), transparent 42%),
+        linear-gradient(180deg, #95512a 0%, #7a391f 52%, var(--brown) 100%);
       cursor: pointer;
-      font: 700 0.95rem system-ui, sans-serif;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
-      transition: transform 160ms ease, filter 160ms ease;
+      font: 800 0.94rem system-ui, sans-serif;
+      letter-spacing: 0;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.42);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 247, 217, 0.35),
+        inset 0 -5px 10px rgba(40, 15, 8, 0.34),
+        0 3px 0 rgba(62, 24, 12, 0.92),
+        0 12px 22px rgba(0, 0, 0, 0.26);
+      transform: translateY(0);
+      transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .stop-button::before,
+    .listen-button::before,
+    .close-button::before {
+      content: "";
+      position: absolute;
+      inset: 1px 8px auto;
+      height: 45%;
+      z-index: -1;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0));
+      pointer-events: none;
     }
 
     .stop-button {
@@ -100,8 +126,31 @@
     .stop-button:hover,
     .listen-button:hover,
     .close-button:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.08);
+      transform: translateY(-2px);
+      filter: brightness(1.07) saturate(1.04);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 247, 217, 0.42),
+        inset 0 -5px 10px rgba(40, 15, 8, 0.3),
+        0 4px 0 rgba(62, 24, 12, 0.92),
+        0 16px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .stop-button:active,
+    .listen-button:active,
+    .close-button:active {
+      transform: translateY(2px);
+      box-shadow:
+        inset 0 2px 8px rgba(36, 13, 7, 0.38),
+        inset 0 -2px 4px rgba(255, 239, 183, 0.12),
+        0 1px 0 rgba(62, 24, 12, 0.9),
+        0 7px 14px rgba(0, 0, 0, 0.22);
+    }
+
+    .stop-button:focus-visible,
+    .listen-button:focus-visible,
+    .close-button:focus-visible {
+      outline: 3px solid rgba(247, 215, 138, 0.52);
+      outline-offset: 3px;
     }
 
     .stage {
@@ -187,7 +236,9 @@
     .video-button {
       display: none;
       padding: 10px 15px;
-      background: linear-gradient(180deg, #8f4a24, var(--brown));
+      background:
+        linear-gradient(180deg, rgba(255, 229, 163, 0.2), transparent 42%),
+        linear-gradient(180deg, #9b552c 0%, #7b3b20 52%, var(--brown) 100%);
     }
 
     .video-button.show {
@@ -223,7 +274,10 @@
 
     .listen-button {
       padding: 10px 15px;
-      background: linear-gradient(180deg, #164b3c, var(--green));
+      min-height: 42px;
+      background:
+        linear-gradient(180deg, rgba(255, 229, 163, 0.17), transparent 42%),
+        linear-gradient(180deg, #1a5a49 0%, #104435 52%, var(--green) 100%);
     }
 
     .close-button {
