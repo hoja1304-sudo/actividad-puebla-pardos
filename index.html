@@ -340,6 +340,7 @@
     <div class="card-actions">
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
       <button class="listen-button video-button" type="button" id="showVideo">Ver video</button>
+      <button class="listen-button video-button" type="button" id="showCaravacaVideo">Cruz de caravaca</button>
     </div>
     <div class="video-panel" id="videoPanel" aria-hidden="true">
       <h3 id="videoTitle">Video complementario</h3>
@@ -383,7 +384,15 @@
         speech: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
         videoTitle: "Historia de la Puebla de los Ángeles",
         videoLocalSrc: "video-puebla-angeles.mp4",
-        videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/video-puebla-angeles.mp4"
+        videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/video-puebla-angeles.mp4",
+        extraVideos: [
+          {
+            title: "Cruz de caravaca en la actualidad",
+            localSrc: "Cruz de caravaca en la actualidad.MP4",
+            webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/cruz-caravaca-actualidad/Cruz%20de%20caravaca%20en%20la%20actualidad.MP4",
+            speech: "Esta es la cruz de caravaca en la actualidad."
+          }
+        ]
       }
     };
 
@@ -395,6 +404,7 @@
     const ideaVideo = document.querySelector("#ideaVideo");
     const videoSource = document.querySelector("#videoSource");
     const showVideoButton = document.querySelector("#showVideo");
+    const showCaravacaVideoButton = document.querySelector("#showCaravacaVideo");
     const voiceSelect = document.querySelector("#voiceSelect");
     const hotspots = document.querySelectorAll(".hotspot");
     let activeZone = null;
@@ -492,15 +502,23 @@
       videoPanel.setAttribute("aria-hidden", "true");
     }
 
-    function showVideo(zone) {
-      const videoSrc = location.protocol === "file:" ? zone.videoLocalSrc : zone.videoWebSrc;
+    function getVideoSrc(video) {
+      if (location.protocol === "file:") {
+        return video.localSrc || video.videoLocalSrc || video.webSrc || video.videoWebSrc;
+      }
+
+      return video.webSrc || video.videoWebSrc || video.localSrc || video.videoLocalSrc;
+    }
+
+    function showVideo(video) {
+      const videoSrc = getVideoSrc(video);
 
       if (!videoSrc) {
         hideVideo();
         return;
       }
 
-      videoTitle.textContent = zone.videoTitle || "Video complementario";
+      videoTitle.textContent = video.title || video.videoTitle || "Video complementario";
       if (videoSource.getAttribute("src") !== videoSrc) {
         videoSource.setAttribute("src", videoSrc);
         ideaVideo.load();
@@ -509,15 +527,37 @@
       videoPanel.setAttribute("aria-hidden", "false");
     }
 
-    function showAndPlayVideo(zone) {
+    function speakText(text) {
+      if (!("speechSynthesis" in window) || !text) {
+        return;
+      }
+
       stopSpeech();
-      showVideo(zone);
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "es-CR";
+      const spanishVoice = getSpanishVoice();
+      if (spanishVoice) {
+        utterance.voice = spanishVoice;
+        utterance.lang = spanishVoice.lang;
+      }
+      utterance.rate = 0.92;
+      utterance.pitch = 0.95;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function showAndPlayVideo(video, narration = "") {
+      stopSpeech();
+      showVideo(video);
 
       const playPromise = ideaVideo.play();
       if (playPromise) {
         playPromise.catch(() => {
           videoPanel.classList.add("open");
         });
+      }
+
+      if (narration) {
+        speakText(narration);
       }
     }
 
@@ -551,6 +591,7 @@
       cardText.textContent = zone.text;
       hideVideo();
       showVideoButton.classList.toggle("show", Boolean(zone.videoLocalSrc || zone.videoWebSrc));
+      showCaravacaVideoButton.classList.toggle("show", Boolean(zone.extraVideos?.length));
       card.classList.add("open");
       card.setAttribute("aria-hidden", "false");
 
@@ -570,6 +611,7 @@
       card.classList.remove("open");
       card.setAttribute("aria-hidden", "true");
       showVideoButton.classList.remove("show");
+      showCaravacaVideoButton.classList.remove("show");
       hotspots.forEach((hotspot) => hotspot.classList.remove("active"));
     }
 
@@ -594,6 +636,17 @@
     showVideoButton.addEventListener("click", () => {
       if (activeZone) {
         showAndPlayVideo(zones[activeZone]);
+      }
+    });
+
+    showCaravacaVideoButton.addEventListener("click", () => {
+      if (!activeZone) {
+        return;
+      }
+
+      const caravacaVideo = zones[activeZone].extraVideos?.[0];
+      if (caravacaVideo) {
+        showAndPlayVideo(caravacaVideo, caravacaVideo.speech);
       }
     });
 
