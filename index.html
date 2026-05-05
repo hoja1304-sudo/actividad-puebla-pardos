@@ -339,8 +339,8 @@
     <p id="cardText"></p>
     <div class="card-actions">
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
-      <button class="listen-button video-button" type="button" id="showVideo">Ver video</button>
-      <button class="listen-button video-button" type="button" id="showCaravacaVideo">Cruz de caravaca</button>
+      <button class="listen-button video-button" type="button" id="showVideo">Obispo Morel</button>
+      <button class="listen-button video-button" type="button" id="showCaravacaVideo">Cruz de Caravaca</button>
     </div>
     <div class="video-panel" id="videoPanel" aria-hidden="true">
       <h3 id="videoTitle">Video complementario</h3>
@@ -547,6 +547,7 @@
 
     function showAndPlayVideo(video, narration = "") {
       stopSpeech();
+      stopVideo();
       showVideo(video);
 
       const playPromise = ideaVideo.play();
@@ -567,6 +568,7 @@
       }
 
       stopSpeech();
+      hideVideo();
       const utterance = new SpeechSynthesisUtterance(zone.speech || zone.text);
       utterance.lang = "es-CR";
       const spanishVoice = getSpanishVoice();
@@ -576,11 +578,6 @@
       }
       utterance.rate = 0.92;
       utterance.pitch = 0.95;
-      utterance.onend = () => {
-        if (activeZone && zones[activeZone] === zone && (zone.videoLocalSrc || zone.videoWebSrc)) {
-          showVideo(zone);
-        }
-      };
       window.speechSynthesis.speak(utterance);
     }
 
@@ -589,6 +586,7 @@
       activeZone = key;
       cardTitle.textContent = zone.title;
       cardText.textContent = zone.text;
+      stopSpeech();
       hideVideo();
       showVideoButton.classList.toggle("show", Boolean(zone.videoLocalSrc || zone.videoWebSrc));
       showCaravacaVideoButton.classList.toggle("show", Boolean(zone.extraVideos?.length));
@@ -599,7 +597,7 @@
         hotspot.classList.toggle("active", hotspot.dataset.zone === key);
       });
 
-      if (shouldSpeak) {
+      if (shouldSpeak && key !== "idea") {
         speak(zone);
       }
     }
@@ -646,7 +644,7 @@
 
       const caravacaVideo = zones[activeZone].extraVideos?.[0];
       if (caravacaVideo) {
-        showAndPlayVideo(caravacaVideo, caravacaVideo.speech);
+        showAndPlayVideo(caravacaVideo);
       }
     });
 
