@@ -408,6 +408,7 @@
     const voiceSelect = document.querySelector("#voiceSelect");
     const hotspots = document.querySelectorAll(".hotspot");
     let activeZone = null;
+    let speakingZone = null;
     let availableVoices = [];
     let selectedVoiceURI = localStorage.getItem("pueblaPardosVoiceURI") || "";
 
@@ -489,6 +490,8 @@
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
+      speakingZone = null;
+      document.querySelector("#listenAgain").textContent = "Escuchar";
     }
 
     function stopVideo() {
@@ -570,6 +573,8 @@
       stopSpeech();
       hideVideo();
       const utterance = new SpeechSynthesisUtterance(zone.speech || zone.text);
+      speakingZone = activeZone;
+      document.querySelector("#listenAgain").textContent = "Detener";
       utterance.lang = "es-CR";
       const spanishVoice = getSpanishVoice();
       if (spanishVoice) {
@@ -578,10 +583,27 @@
       }
       utterance.rate = 0.92;
       utterance.pitch = 0.95;
+      utterance.onend = () => {
+        speakingZone = null;
+        document.querySelector("#listenAgain").textContent = "Escuchar";
+      };
       window.speechSynthesis.speak(utterance);
     }
 
-    function openCard(key, shouldSpeak = true) {
+    function toggleSpeech() {
+      if (!activeZone) {
+        return;
+      }
+
+      if (speakingZone === activeZone && "speechSynthesis" in window && window.speechSynthesis.speaking) {
+        stopSpeech();
+        return;
+      }
+
+      speak(zones[activeZone]);
+    }
+
+    function openCard(key) {
       const zone = zones[key];
       activeZone = key;
       cardTitle.textContent = zone.title;
@@ -597,9 +619,6 @@
         hotspot.classList.toggle("active", hotspot.dataset.zone === key);
       });
 
-      if (shouldSpeak && key !== "idea") {
-        speak(zone);
-      }
     }
 
     function closeCard() {
@@ -626,9 +645,7 @@
     document.querySelector("#closeCard").addEventListener("click", closeCard);
     document.querySelector("#stopSpeech").addEventListener("click", stopSpeech);
     document.querySelector("#listenAgain").addEventListener("click", () => {
-      if (activeZone) {
-        speak(zones[activeZone]);
-      }
+      toggleSpeech();
     });
 
     showVideoButton.addEventListener("click", () => {
@@ -651,10 +668,6 @@
     voiceSelect.addEventListener("change", () => {
       selectedVoiceURI = voiceSelect.value;
       localStorage.setItem("pueblaPardosVoiceURI", selectedVoiceURI);
-
-      if (activeZone) {
-        speak(zones[activeZone]);
-      }
     });
 
     document.addEventListener("keydown", (event) => {
