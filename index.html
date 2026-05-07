@@ -182,9 +182,11 @@
     .hotspot:focus-visible,
     .hotspot.active {
       outline: none;
-      border-color: var(--gold);
-      background: rgba(201, 154, 61, 0.16);
-      box-shadow: inset 0 0 0 2px rgba(8, 47, 37, 0.42), 0 0 18px rgba(201, 154, 61, 0.42);
+      border-color: rgba(248, 223, 164, 0.82);
+      background: rgba(246, 239, 217, 0.08);
+      box-shadow:
+        inset 0 0 0 1px rgba(8, 47, 37, 0.22),
+        0 10px 28px rgba(8, 22, 18, 0.18);
     }
 
     .card {
@@ -192,53 +194,61 @@
       right: max(18px, calc((100vw - 1180px) / 2 + 26px));
       bottom: 24px;
       z-index: 10;
-      width: min(420px, calc(100vw - 28px));
-      padding: 22px;
-      border: 2px solid var(--gold);
-      border-radius: 12px;
+      width: min(440px, calc(100vw - 28px));
+      max-height: calc(100dvh - 48px);
+      overflow: auto;
+      padding: 24px;
+      border: 1px solid rgba(255, 248, 224, 0.62);
+      border-radius: 8px;
       color: var(--ink);
       background:
-        linear-gradient(180deg, rgba(255, 252, 238, 0.96), rgba(244, 229, 190, 0.97)),
-        var(--cream);
-      box-shadow: var(--shadow);
-      transform: translateY(18px);
+        linear-gradient(135deg, rgba(255, 253, 245, 0.94), rgba(240, 228, 202, 0.86)),
+        rgba(246, 239, 217, 0.9);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        0 28px 70px rgba(8, 19, 15, 0.32),
+        0 4px 18px rgba(8, 19, 15, 0.14);
+      backdrop-filter: blur(18px) saturate(1.08);
+      -webkit-backdrop-filter: blur(18px) saturate(1.08);
+      transform: translate3d(0, 14px, 0) scale(0.985);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 180ms ease, transform 180ms ease;
+      transition:
+        opacity 260ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform, opacity;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(8, 47, 37, 0.28) transparent;
     }
 
     .card.open {
-      transform: translateY(0);
+      transform: translate3d(0, 0, 0) scale(1);
       opacity: 1;
       pointer-events: auto;
     }
 
     .card h2 {
-      margin: 0 34px 8px 0;
+      margin: 0 44px 10px 0;
       color: var(--green);
-      font-size: clamp(1.35rem, 4vw, 1.9rem);
-      line-height: 1.05;
+      font: 700 clamp(1.18rem, 3.5vw, 1.58rem)/1.08 Georgia, "Times New Roman", serif;
+      letter-spacing: 0;
     }
 
     .card p {
-      margin: 0 0 18px;
-      font: 1rem/1.55 system-ui, sans-serif;
-      color: #2c2519;
+      margin: 0 0 20px;
+      font: 0.96rem/1.68 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: rgba(29, 26, 20, 0.82);
     }
 
     .card-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     .video-button {
       display: none;
-      padding: 10px 15px;
-      background:
-        linear-gradient(180deg, rgba(255, 229, 163, 0.2), transparent 42%),
-        linear-gradient(180deg, #9b552c 0%, #7b3b20 52%, var(--brown) 100%);
     }
 
     .video-button.show {
@@ -247,9 +257,9 @@
 
     .video-panel {
       display: none;
-      margin-top: 18px;
+      margin-top: 20px;
       padding-top: 16px;
-      border-top: 1px solid rgba(111, 50, 29, 0.25);
+      border-top: 1px solid rgba(29, 26, 20, 0.12);
     }
 
     .video-panel.open {
@@ -257,38 +267,77 @@
     }
 
     .video-panel h3 {
-      margin: 0 0 8px;
-      color: var(--brown);
-      font-size: 1.05rem;
-      line-height: 1.2;
+      margin: 0 0 10px;
+      color: rgba(29, 26, 20, 0.72);
+      font: 700 0.82rem/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .video-panel video {
       display: block;
       width: 100%;
       max-height: 48vh;
-      border: 2px solid rgba(201, 154, 61, 0.75);
-      border-radius: 8px;
+      border: 1px solid rgba(29, 26, 20, 0.12);
+      border-radius: 7px;
       background: #0d1815;
+      box-shadow: 0 16px 34px rgba(8, 19, 15, 0.18);
     }
 
     .listen-button {
-      padding: 10px 15px;
-      min-height: 42px;
-      background:
-        linear-gradient(180deg, rgba(255, 229, 163, 0.17), transparent 42%),
-        linear-gradient(180deg, #1a5a49 0%, #104435 52%, var(--green) 100%);
+      min-height: 38px;
+      padding: 9px 14px;
+      border: 1px solid rgba(8, 47, 37, 0.18);
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(255, 255, 255, 0.34);
+      font: 700 0.84rem system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      text-shadow: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.62),
+        0 8px 20px rgba(8, 19, 15, 0.08);
     }
 
     .close-button {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 34px;
-      height: 34px;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
       padding: 0;
-      font-size: 1.2rem;
+      border: 1px solid rgba(8, 47, 37, 0.14);
+      color: rgba(29, 26, 20, 0.72);
+      background: rgba(255, 255, 255, 0.32);
+      font-size: 1.12rem;
       line-height: 1;
+      text-shadow: none;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.65),
+        0 8px 18px rgba(8, 19, 15, 0.08);
+    }
+
+    .card .listen-button:hover,
+    .card .close-button:hover {
+      color: var(--green);
+      background: rgba(255, 255, 255, 0.58);
+      filter: none;
+      transform: translateY(-1px);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        0 11px 24px rgba(8, 19, 15, 0.12);
+    }
+
+    .card .listen-button::before,
+    .card .close-button::before {
+      display: none;
+    }
+
+    .card .listen-button:active,
+    .card .close-button:active {
+      transform: translateY(1px);
+      box-shadow:
+        inset 0 1px 3px rgba(8, 19, 15, 0.1),
+        0 5px 14px rgba(8, 19, 15, 0.08);
     }
 
     .hint {
@@ -346,6 +395,7 @@
         right: 10px;
         bottom: 10px;
         width: auto;
+        max-height: calc(100dvh - 20px);
         padding: 18px;
       }
     }
