@@ -51,7 +51,6 @@
       text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
     }
 
-    .stop-button,
     .listen-button,
     .close-button {
       position: relative;
@@ -77,7 +76,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .stop-button::before,
     .listen-button::before,
     .close-button::before {
       content: "";
@@ -90,12 +88,6 @@
       pointer-events: none;
     }
 
-    .stop-button {
-      padding: 11px 16px;
-      white-space: nowrap;
-    }
-
-    .stop-button:hover,
     .listen-button:hover,
     .close-button:hover {
       transform: translateY(-2px);
@@ -107,7 +99,6 @@
         0 16px 28px rgba(0, 0, 0, 0.28);
     }
 
-    .stop-button:active,
     .listen-button:active,
     .close-button:active {
       transform: translateY(2px);
@@ -118,7 +109,6 @@
         0 7px 14px rgba(0, 0, 0, 0.22);
     }
 
-    .stop-button:focus-visible,
     .listen-button:focus-visible,
     .close-button:focus-visible {
       outline: 3px solid rgba(247, 215, 138, 0.52);
@@ -429,10 +419,6 @@
         flex-direction: column;
       }
 
-      .stop-button {
-        width: 100%;
-      }
-
       .stage {
         border-width: 1px;
         border-radius: 0;
@@ -457,7 +443,6 @@
   <main>
     <div class="topbar">
       <h1>Fundación de la Puebla de los Pardos</h1>
-      <button class="stop-button" type="button" id="stopAudio">Detener audio</button>
     </div>
 
     <footer class="credit">
@@ -871,7 +856,6 @@
     });
 
     document.querySelector("#closeCard").addEventListener("click", closeCard);
-    document.querySelector("#stopAudio").addEventListener("click", stopAudio);
     listenAgain.addEventListener("click", toggleAudio);
     showAugust3Button.addEventListener("click", showAugust3);
     toggleAugust3AudioButton.addEventListener("click", toggleAugust3Audio);
