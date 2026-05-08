@@ -659,7 +659,13 @@
     }
 
     function getVideoSrc(video) {
-      return video.localSrc || video.videoLocalSrc || video.webSrc || video.videoWebSrc;
+      const isLocalPage = location.protocol === "file:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+
+      if (isLocalPage) {
+        return video.localSrc || video.videoLocalSrc || video.webSrc || video.videoWebSrc;
+      }
+
+      return video.webSrc || video.videoWebSrc || video.localSrc || video.videoLocalSrc;
     }
 
     function setAudioSource(src) {
