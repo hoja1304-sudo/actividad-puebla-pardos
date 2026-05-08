@@ -1,0 +1,257 @@
+:root {
+  --bg: #f4efe3;
+  --surface: #fffaf0;
+  --surface-strong: #ffffff;
+  --ink: #1c2520;
+  --muted: #5f675f;
+  --line: #d8ccba;
+  --forest: #194f3b;
+  --forest-dark: #103628;
+  --clay: #9f4f2e;
+  --gold: #c99a3d;
+  --river: #2d7c9f;
+  --shadow: 0 18px 50px rgba(42, 35, 25, 0.18);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  color: var(--ink);
+  background: var(--bg);
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  z-index: 2;
+  overflow-y: auto;
+}
+
+.intro h1,
+.map-header h2,
+.panel-section h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.intro h1 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.98;
+}
+
+.intro p {
+  margin: 12px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--clay);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.notice {
+  padding: 14px 16px;
+  border-left: 5px solid var(--clay);
+  background: #f8e5d7;
+  color: #4a2417;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.panel-section {
+  padding-top: 2px;
+}
+
+.panel-section h2 {
+  font-size: 1rem;
+  color: var(--forest-dark);
+  margin-bottom: 10px;
+}
+
+.history-list,
+.scene-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.history-list li,
+.scene-list li {
+  margin: 0 0 10px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.history-list strong {
+  color: var(--ink);
+}
+
+.scene-list li {
+  padding: 7px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.scene-list li:hover,
+.scene-list li.active {
+  background: #e9f0e9;
+  color: var(--forest-dark);
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.control-grid button {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--forest);
+  border-radius: 7px;
+  background: var(--forest);
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.control-grid button:nth-child(3),
+.control-grid button:nth-child(4) {
+  background: var(--surface-strong);
+  color: var(--forest-dark);
+}
+
+.control-grid button:hover {
+  filter: brightness(1.05);
+}
+
+.source-note {
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 0.83rem;
+  line-height: 1.4;
+}
+
+.map-area {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-width: 0;
+  min-height: 100vh;
+  background: #d9e4dd;
+}
+
+.map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  background: rgba(255, 250, 240, 0.94);
+  border-bottom: 1px solid var(--line);
+  z-index: 1;
+}
+
+.map-header h2 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+.status-pill {
+  max-width: 300px;
+  padding: 8px 12px;
+  border: 1px solid #b9d0c2;
+  border-radius: 999px;
+  background: #eef6ef;
+  color: var(--forest-dark);
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#cesiumContainer {
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+}
+
+.map-caption {
+  padding: 12px 22px;
+  background: rgba(25, 79, 59, 0.94);
+  color: white;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.cesium-infoBox-title {
+  background: var(--forest-dark);
+}
+
+.cesium-infoBox-description {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .map-area {
+    min-height: 720px;
+  }
+}
+
+@media (max-width: 540px) {
+  .sidebar {
+    padding: 20px;
+  }
+
+  .map-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-pill {
+    max-width: 100%;
+  }
+
+  #cesiumContainer {
+    min-height: 480px;
+  }
+}
