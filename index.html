@@ -43,34 +43,6 @@
       margin-bottom: 16px;
     }
 
-    .voice-tools {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .voice-label {
-      display: grid;
-      gap: 4px;
-      color: rgba(246, 239, 217, 0.86);
-      font: 700 0.8rem system-ui, sans-serif;
-      letter-spacing: 0;
-    }
-
-    .voice-select {
-      width: min(280px, 54vw);
-      min-height: 40px;
-      border: 1px solid rgba(201, 154, 61, 0.75);
-      border-radius: 999px;
-      padding: 8px 36px 8px 14px;
-      color: var(--cream);
-      background: #123f32;
-      font: 700 0.92rem system-ui, sans-serif;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
-    }
-
     h1 {
       margin: 0;
       font-size: clamp(1.25rem, 3vw, 2.35rem);
@@ -235,7 +207,7 @@
     }
 
     .card p {
-      margin: 0 0 20px;
+      margin: 0 0 16px;
       font: 0.96rem/1.68 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: rgba(29, 26, 20, 0.82);
     }
@@ -358,6 +330,8 @@
     }
 
     .credit strong {
+      display: block;
+      margin-bottom: 3px;
       color: #f7d78a;
     }
 
@@ -371,13 +345,7 @@
         flex-direction: column;
       }
 
-      .voice-tools,
       .stop-button {
-        width: 100%;
-      }
-
-      .voice-label,
-      .voice-select {
         width: 100%;
       }
 
@@ -405,19 +373,13 @@
   <main>
     <div class="topbar">
       <h1>Fundación de la Puebla de los Pardos</h1>
-      <div class="voice-tools">
-        <label class="voice-label" for="voiceSelect">
-          Voz
-          <select class="voice-select" id="voiceSelect" aria-label="Seleccionar voz en español">
-            <option value="">Cargando voces...</option>
-          </select>
-        </label>
-        <button class="stop-button" type="button" id="stopSpeech">Detener narración</button>
-      </div>
+      <button class="stop-button" type="button" id="stopAudio">Detener audio</button>
     </div>
 
     <footer class="credit">
-      <strong>Material elaborado por:</strong> Asesor Regional de Matemática de la DRE-Cartago, José Alberto Jiménez Ruiz.
+      <strong>Elaborado por</strong>
+      Alberto Jiménez Ruiz<br>
+      Asesor Regional de Matemática, DRE-Cartago
     </footer>
 
     <section class="stage" aria-label="Afiche histórico interactivo">
@@ -426,21 +388,24 @@
         src="afiche.png"
         alt="Afiche sobre la Fundación de la Puebla de los Pardos en Cartago, Costa Rica, 1650">
 
+      <button class="hotspot" type="button" data-zone="fundacion" style="left: 1.1%; top: 0.8%; width: 97.8%; height: 17.0%;" aria-label="Fundación de la Puebla de los Pardos"></button>
       <button class="hotspot" type="button" data-zone="timeline" style="left: 1.1%; top: 18.2%; width: 97.8%; height: 16.2%;" aria-label="Línea de tiempo"></button>
       <button class="hotspot" type="button" data-zone="contexto" style="left: 1.1%; top: 34.8%; width: 97.8%; height: 14.2%;" aria-label="Contexto previo"></button>
       <button class="hotspot" type="button" data-zone="orden" style="left: 1.1%; top: 49.2%; width: 97.8%; height: 14.3%;" aria-label="Orden de fundación"></button>
       <button class="hotspot" type="button" data-zone="desarrollo" style="left: 1.1%; top: 63.8%; width: 97.8%; height: 14.8%;" aria-label="Desarrollo inicial"></button>
       <button class="hotspot" type="button" data-zone="vida" style="left: 1.1%; top: 78.8%; width: 97.8%; height: 12.1%;" aria-label="Vida e integración social"></button>
+      <button class="hotspot" type="button" data-zone="caravaca" style="left: 1.1%; top: 91.6%; width: 33.4%; height: 7.1%;" aria-label="Ubicación Cruz Caravaca"></button>
       <button class="hotspot" type="button" data-zone="idea" style="left: 35.4%; top: 91.6%; width: 63.4%; height: 7.1%;" aria-label="Idea clave"></button>
     </section>
 
-    <p class="hint">Toca o pasa el mouse sobre una sección del afiche para explorarla.</p>
+    <p class="hint">Toca o pasa el mouse sobre una sección del afiche para explorarla y escuchar su audio local.</p>
   </main>
 
   <aside class="card" id="infoCard" aria-live="polite" aria-hidden="true">
     <button class="close-button" type="button" id="closeCard" aria-label="Cerrar tarjeta">×</button>
     <h2 id="cardTitle"></h2>
     <p id="cardText"></p>
+    <audio id="zoneAudio" preload="auto"></audio>
     <div class="card-actions">
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
       <button class="listen-button video-button" type="button" id="showVideo">Obispo Morel</button>
@@ -457,44 +422,60 @@
 
   <script>
     const zones = {
+      fundacion: {
+        title: "Fundación de la Puebla de los Pardos",
+        text: "Presenta el tema central del afiche: la fundación de un asentamiento colonial asociado con población afrodescendiente libre en Cartago. Esta ficha funciona como entrada inicial antes de recorrer las demás secciones.",
+        audio: "Fundación de la Puebla de los Pardos.mp3"
+      },
       timeline: {
-        title: "Línea de tiempo",
+        title: "Linea de tiempo",
         text: "Resume los hechos principales entre 1629 y 1679. Ayuda a ver cómo la población afrodescendiente libre pasó de vivir dispersa a formar un espacio organizado en Cartago.",
-        speech: "En 1629, negros libres, mulatos y pardos vivían dispersos en los montes orientales de Cartago, especialmente en La Gotera, en los ejidos de la ciudad. El 10 de diciembre de 1650, el gobernador interino Juan Fernández de Salinas ordenó que pardos, mulatos y negros libres se concentraran en un solar específico en La Gotera, a una legua del centro urbano. En 1651, se asignaron 100 varas de tierra para el poblado, con capilla y cofradía. En 1653, se erigió la cofradía de la Virgen de los Ángeles, vinculada al hallazgo de La Negrita por la mulata Juana Pereira hacia 1635. Finalmente, en 1679, Miguel de Alvarado, figura como alcalde, muestra la integración de pobladores en oficios urbanos, aunque todavía existía segregación."
+        audio: "Linea de tiempo.mp3"
       },
       contexto: {
         title: "Contexto previo",
         text: "Antes de 1650, negros libres, mulatos y pardos habitaban zonas como La Gotera. Su dispersión preocupaba a las autoridades coloniales y generó intentos de control religioso y social.",
-        speech: "Antes de 1650, negros libres, mulatos y pardos habitaban zonas como La Gotera. Su dispersión preocupaba a las autoridades coloniales y generó intentos de control religioso y social."
+        audio: "Contexto previo.mp3"
       },
       orden: {
         title: "Orden de fundación",
         text: "El 10 de diciembre de 1650 se ordenó concentrar a esta población en un solar específico. La medida buscaba vigilar, evangelizar y separar a estos grupos del centro urbano.",
-        speech: "El 10 de diciembre de 1650 se ordenó concentrar a esta población en un solar específico. La medida buscaba vigilar, evangelizar y separar a estos grupos del centro urbano."
+        audio: "Orden de fundaciòn.mp3"
       },
       desarrollo: {
         title: "Desarrollo inicial",
         text: "En 1651 se asignaron tierras para el poblado y luego surgieron una capilla y una cofradía. Estas instituciones ayudaron a organizar la vida religiosa, económica y comunitaria.",
-        speech: "En 1651 se asignaron tierras para el poblado y luego surgieron una capilla y una cofradía. Estas instituciones ayudaron a organizar la vida religiosa, económica y comunitaria."
+        audio: "Desarrollo inicial.mp3"
       },
       vida: {
         title: "Vida e integración social",
         text: "Aunque existía segregación, algunos habitantes se integraron a oficios urbanos. El caso de Miguel de Alvarado, alcalde en 1679, muestra participación social dentro de Cartago.",
-        speech: "Aunque existía segregación, algunos habitantes se integraron a oficios urbanos. El caso de Miguel de Alvarado, alcalde en 1679, muestra participación social dentro de Cartago."
+        audio: "Vida e integraciòn social.mp3"
+      },
+      caravaca: {
+        title: "Ubicación Cruz Caravaca",
+        text: "La Cruz de Caravaca sirve como referencia actual para orientar la ubicación histórica aproximada y conversar sobre los límites sociales y espaciales de la Cartago colonial.",
+        audio: "Ubicación Cruz Caravaca.mp3",
+        extraVideos: [
+          {
+            title: "Cruz de caravaca en la actualidad",
+            localSrc: "cruz-caravaca-con-audio.mp4",
+            webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/cruz-caravaca-actualidad/cruz-caravaca-celular.mp4"
+          }
+        ]
       },
       idea: {
         title: "Idea clave",
         text: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
-        speech: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
+        audio: "Idea clave.mp3",
         videoTitle: "Historia de la Puebla de los Ángeles",
         videoLocalSrc: "video-puebla-angeles.mp4",
         videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/video-puebla-angeles.mp4",
         extraVideos: [
           {
             title: "Cruz de caravaca en la actualidad",
-            localSrc: "cruz-caravaca-celular.mp4",
-            webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/cruz-caravaca-actualidad/cruz-caravaca-celular.mp4",
-            speech: "Esta es la cruz de caravaca en la actualidad."
+            localSrc: "cruz-caravaca-con-audio.mp4",
+            webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/cruz-caravaca-actualidad/cruz-caravaca-celular.mp4"
           }
         ]
       }
@@ -503,99 +484,22 @@
     const card = document.querySelector("#infoCard");
     const cardTitle = document.querySelector("#cardTitle");
     const cardText = document.querySelector("#cardText");
+    const zoneAudio = document.querySelector("#zoneAudio");
     const videoPanel = document.querySelector("#videoPanel");
     const videoTitle = document.querySelector("#videoTitle");
     const ideaVideo = document.querySelector("#ideaVideo");
     const videoSource = document.querySelector("#videoSource");
     const showVideoButton = document.querySelector("#showVideo");
     const showCaravacaVideoButton = document.querySelector("#showCaravacaVideo");
-    const voiceSelect = document.querySelector("#voiceSelect");
     const hotspots = document.querySelectorAll(".hotspot");
+    const listenAgain = document.querySelector("#listenAgain");
     let activeZone = null;
-    let speakingZone = null;
-    let availableVoices = [];
-    let selectedVoiceURI = localStorage.getItem("pueblaPardosVoiceURI") || "";
+    let activeVideoAudio = "";
 
-    function scoreSpanishVoice(voice) {
-      const lang = voice.lang.toLowerCase();
-      const name = voice.name.toLowerCase();
-      let score = 0;
-
-      if (lang === "es-cr") score += 100;
-      if (name.includes("costa rica") || name.includes("costarricense")) score += 95;
-      if (lang === "es-419") score += 80;
-      if (name.includes("latin") || name.includes("latino")) score += 70;
-      if (lang === "es-mx" || lang === "es-us") score += 45;
-      if (lang.startsWith("es")) score += 20;
-      if (voice.localService) score += 4;
-      if (lang === "es-es") score -= 8;
-
-      return score;
-    }
-
-    function loadVoices() {
-      if ("speechSynthesis" in window) {
-        availableVoices = window.speechSynthesis.getVoices();
-        updateVoiceSelect();
-      }
-    }
-
-    function getSpanishVoice() {
-      const normalizedVoices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
-      const selectedVoice = normalizedVoices.find((voice) => voice.voiceURI === selectedVoiceURI);
-
-      if (selectedVoice) {
-        return selectedVoice;
-      }
-
-      const spanishVoices = normalizedVoices
-        .filter((voice) => voice.lang.toLowerCase().startsWith("es"))
-        .sort((a, b) => scoreSpanishVoice(b) - scoreSpanishVoice(a));
-
-      const bestVoice = spanishVoices[0] || null;
-      if (bestVoice) {
-        selectedVoiceURI = bestVoice.voiceURI;
-        localStorage.setItem("pueblaPardosVoiceURI", selectedVoiceURI);
-      }
-
-      return bestVoice;
-    }
-
-    function updateVoiceSelect() {
-      const spanishVoices = availableVoices
-        .filter((voice) => voice.lang.toLowerCase().startsWith("es"))
-        .sort((a, b) => scoreSpanishVoice(b) - scoreSpanishVoice(a));
-
-      voiceSelect.innerHTML = "";
-
-      if (!spanishVoices.length) {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "Voz predeterminada del navegador";
-        voiceSelect.appendChild(option);
-        return;
-      }
-
-      if (!selectedVoiceURI || !spanishVoices.some((voice) => voice.voiceURI === selectedVoiceURI)) {
-        selectedVoiceURI = spanishVoices[0].voiceURI;
-        localStorage.setItem("pueblaPardosVoiceURI", selectedVoiceURI);
-      }
-
-      spanishVoices.forEach((voice) => {
-        const option = document.createElement("option");
-        option.value = voice.voiceURI;
-        option.textContent = `${voice.name} (${voice.lang})`;
-        option.selected = voice.voiceURI === selectedVoiceURI;
-        voiceSelect.appendChild(option);
-      });
-    }
-
-    function stopSpeech() {
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
-      speakingZone = null;
-      document.querySelector("#listenAgain").textContent = "Escuchar";
+    function stopAudio() {
+      zoneAudio.pause();
+      zoneAudio.currentTime = 0;
+      listenAgain.textContent = "Escuchar";
     }
 
     function stopVideo() {
@@ -605,16 +509,17 @@
 
     function hideVideo() {
       stopVideo();
+      activeVideoAudio = "";
       videoPanel.classList.remove("open");
       videoPanel.setAttribute("aria-hidden", "true");
     }
 
     function getVideoSrc(video) {
-      if (location.protocol === "file:") {
-        return video.localSrc || video.videoLocalSrc || video.webSrc || video.videoWebSrc;
-      }
+      return video.localSrc || video.videoLocalSrc || video.webSrc || video.videoWebSrc;
+    }
 
-      return video.webSrc || video.videoWebSrc || video.localSrc || video.videoLocalSrc;
+    function setAudioSource(src) {
+      zoneAudio.src = encodeURI(src);
     }
 
     function showVideo(video) {
@@ -634,28 +539,46 @@
       videoPanel.setAttribute("aria-hidden", "false");
     }
 
-    function speakText(text) {
-      if (!("speechSynthesis" in window) || !text) {
+    function playActiveAudio() {
+      if (!activeZone) return;
+
+      hideVideo();
+      zoneAudio.play().then(() => {
+        listenAgain.textContent = "Detener";
+      }).catch(() => {
+        listenAgain.textContent = "Escuchar";
+      });
+    }
+
+    function toggleAudio() {
+      if (zoneAudio.paused) {
+        playActiveAudio();
         return;
       }
 
-      stopSpeech();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "es-CR";
-      const spanishVoice = getSpanishVoice();
-      if (spanishVoice) {
-        utterance.voice = spanishVoice;
-        utterance.lang = spanishVoice.lang;
-      }
-      utterance.rate = 0.92;
-      utterance.pitch = 0.95;
-      window.speechSynthesis.speak(utterance);
+      stopAudio();
     }
 
-    function showAndPlayVideo(video, narration = "") {
-      stopSpeech();
+    function showAndPlayVideo(video) {
+      stopAudio();
       stopVideo();
       showVideo(video);
+      activeVideoAudio = video.audio || "";
+
+      if (activeVideoAudio) {
+        setAudioSource(activeVideoAudio);
+        zoneAudio.load();
+        zoneAudio.currentTime = 0;
+        zoneAudio.setAttribute("aria-label", `Audio: ${video.title}`);
+        zoneAudio.play().then(() => {
+          listenAgain.textContent = "Detener";
+        }).catch(() => {
+          listenAgain.textContent = "Escuchar";
+        });
+      } else {
+        setAudioSource(zones[activeZone]?.audio || "");
+        zoneAudio.load();
+      }
 
       const playPromise = ideaVideo.play();
       if (playPromise) {
@@ -663,48 +586,6 @@
           videoPanel.classList.add("open");
         });
       }
-
-      if (narration) {
-        speakText(narration);
-      }
-    }
-
-    function speak(zone) {
-      if (!("speechSynthesis" in window)) {
-        return;
-      }
-
-      stopSpeech();
-      hideVideo();
-      const utterance = new SpeechSynthesisUtterance(zone.speech || zone.text);
-      speakingZone = activeZone;
-      document.querySelector("#listenAgain").textContent = "Detener";
-      utterance.lang = "es-CR";
-      const spanishVoice = getSpanishVoice();
-      if (spanishVoice) {
-        utterance.voice = spanishVoice;
-        utterance.lang = spanishVoice.lang;
-      }
-      utterance.rate = 0.92;
-      utterance.pitch = 0.95;
-      utterance.onend = () => {
-        speakingZone = null;
-        document.querySelector("#listenAgain").textContent = "Escuchar";
-      };
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function toggleSpeech() {
-      if (!activeZone) {
-        return;
-      }
-
-      if (speakingZone === activeZone && "speechSynthesis" in window && window.speechSynthesis.speaking) {
-        stopSpeech();
-        return;
-      }
-
-      speak(zones[activeZone]);
     }
 
     function openCard(key) {
@@ -712,8 +593,10 @@
       activeZone = key;
       cardTitle.textContent = zone.title;
       cardText.textContent = zone.text;
-      stopSpeech();
+      stopAudio();
       hideVideo();
+      setAudioSource(zone.audio);
+      zoneAudio.setAttribute("aria-label", `Audio: ${zone.title}`);
       showVideoButton.classList.toggle("show", Boolean(zone.videoLocalSrc || zone.videoWebSrc));
       showCaravacaVideoButton.classList.toggle("show", Boolean(zone.extraVideos?.length));
       card.classList.add("open");
@@ -722,11 +605,10 @@
       hotspots.forEach((hotspot) => {
         hotspot.classList.toggle("active", hotspot.dataset.zone === key);
       });
-
     }
 
     function closeCard() {
-      stopSpeech();
+      stopAudio();
       stopVideo();
       activeZone = null;
       card.classList.remove("open");
@@ -746,11 +628,26 @@
       });
     });
 
-    document.querySelector("#closeCard").addEventListener("click", closeCard);
-    document.querySelector("#stopSpeech").addEventListener("click", stopSpeech);
-    document.querySelector("#listenAgain").addEventListener("click", () => {
-      toggleSpeech();
+    zoneAudio.addEventListener("ended", () => {
+      listenAgain.textContent = "Escuchar";
     });
+
+    ideaVideo.addEventListener("play", () => {
+      if (activeVideoAudio && zoneAudio.paused) {
+        setAudioSource(activeVideoAudio);
+        zoneAudio.play().then(() => {
+          listenAgain.textContent = "Detener";
+        }).catch(() => {});
+      }
+    });
+
+    ideaVideo.addEventListener("ended", () => {
+      stopAudio();
+    });
+
+    document.querySelector("#closeCard").addEventListener("click", closeCard);
+    document.querySelector("#stopAudio").addEventListener("click", stopAudio);
+    listenAgain.addEventListener("click", toggleAudio);
 
     showVideoButton.addEventListener("click", () => {
       if (activeZone) {
@@ -759,9 +656,7 @@
     });
 
     showCaravacaVideoButton.addEventListener("click", () => {
-      if (!activeZone) {
-        return;
-      }
+      if (!activeZone) return;
 
       const caravacaVideo = zones[activeZone].extraVideos?.[0];
       if (caravacaVideo) {
@@ -769,21 +664,11 @@
       }
     });
 
-    voiceSelect.addEventListener("change", () => {
-      selectedVoiceURI = voiceSelect.value;
-      localStorage.setItem("pueblaPardosVoiceURI", selectedVoiceURI);
-    });
-
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         closeCard();
       }
     });
-
-    loadVoices();
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
-    }
   </script>
 </body>
 </html>
