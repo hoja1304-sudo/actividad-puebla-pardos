@@ -203,6 +203,13 @@
       display: none;
     }
 
+    .card.juana-mode h2,
+    .card.juana-mode > p,
+    .card.juana-mode .card-actions,
+    .card.juana-mode .video-panel {
+      display: none;
+    }
+
     .card h2 {
       margin: 0 44px 10px 0;
       color: var(--green);
@@ -231,11 +238,27 @@
       display: none;
     }
 
+    .development-button {
+      display: none;
+    }
+
+    .life-button {
+      display: none;
+    }
+
     .video-button.show {
       display: inline-flex;
     }
 
     .context-button.show {
+      display: inline-flex;
+    }
+
+    .development-button.show {
+      display: inline-flex;
+    }
+
+    .life-button.show {
       display: inline-flex;
     }
 
@@ -478,6 +501,9 @@
     <div class="card-actions">
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
       <button class="listen-button context-button" type="button" id="showAugust3">3 agosto</button>
+      <button class="listen-button development-button" type="button" id="showVirgin">Virgen de los Ángeles</button>
+      <button class="listen-button development-button" type="button" id="showJuana">Juan Pereira</button>
+      <button class="listen-button life-button" type="button" id="showSocialIntegration">Integración social y oficios</button>
       <button class="listen-button video-button" type="button" id="showVideo">Obispo Morel</button>
       <button class="listen-button video-button" type="button" id="showCaravacaVideo">Cruz de Caravaca</button>
     </div>
@@ -492,6 +518,14 @@
       <div class="image-actions">
         <button class="listen-button" type="button" id="toggleAugust3Audio">Detener</button>
         <button class="listen-button" type="button" id="returnFromAugust3">Regresar</button>
+      </div>
+    </div>
+    <div class="image-panel" id="juanaPanel" aria-hidden="true">
+      <h3>Juana Pereira</h3>
+      <img src="Juana Pereira.png" alt="Imagen de Juana Pereira">
+      <div class="image-actions">
+        <button class="listen-button" type="button" id="toggleJuanaAudio">Detener</button>
+        <button class="listen-button" type="button" id="returnFromJuana">Regresar</button>
       </div>
     </div>
     <div class="video-panel" id="videoPanel" aria-hidden="true">
@@ -532,12 +566,24 @@
       desarrollo: {
         title: "Desarrollo inicial",
         text: "En 1651 se asignaron tierras para el poblado y luego surgieron una capilla y una cofradía. Estas instituciones ayudaron a organizar la vida religiosa, económica y comunitaria.",
-        audio: "Desarrollo inicial.mp3"
+        audio: "Desarrollo inicial.mp3",
+        virginVideo: {
+          title: "La Leyenda Virgen de los Ángeles",
+          localSrc: "La Leyenda Virgen de los Ángeles.mp4"
+        },
+        juana: {
+          title: "Juana Pereira",
+          audio: "Juana Pereira.mp3"
+        }
       },
       vida: {
         title: "Vida e integración social",
         text: "Aunque existía segregación, algunos habitantes se integraron a oficios urbanos. El caso de Miguel de Alvarado, alcalde en 1679, muestra participación social dentro de Cartago.",
-        audio: "Vida e integraciòn social.mp3"
+        audio: "Vida e integraciòn social.mp3",
+        socialIntegrationVideo: {
+          title: "Estructura demográfica y oficios de La Puebla de los Pardos",
+          localSrc: "Estructura demográfica y oficios de La Puebla de los Pardos.mp4"
+        }
       },
       caravaca: {
         title: "Ubicación Cruz Caravaca",
@@ -581,8 +627,14 @@
     const august3Panel = document.querySelector("#august3Panel");
     const august3Author = document.querySelector("#august3Author");
     const showAugust3Button = document.querySelector("#showAugust3");
+    const showVirginButton = document.querySelector("#showVirgin");
+    const showJuanaButton = document.querySelector("#showJuana");
+    const showSocialIntegrationButton = document.querySelector("#showSocialIntegration");
+    const juanaPanel = document.querySelector("#juanaPanel");
     const toggleAugust3AudioButton = document.querySelector("#toggleAugust3Audio");
     const returnFromAugust3Button = document.querySelector("#returnFromAugust3");
+    const toggleJuanaAudioButton = document.querySelector("#toggleJuanaAudio");
+    const returnFromJuanaButton = document.querySelector("#returnFromJuana");
     const showVideoButton = document.querySelector("#showVideo");
     const showCaravacaVideoButton = document.querySelector("#showCaravacaVideo");
     const hotspots = document.querySelectorAll(".hotspot");
@@ -591,6 +643,7 @@
     let activeVideoAudio = "";
     let videoModeActive = false;
     let august3Active = false;
+    let juanaActive = false;
     let august3ReturnTimer = null;
 
     function stopAudio() {
@@ -618,6 +671,14 @@
       toggleVideoPlaybackButton.textContent = "Detener";
       videoPanel.classList.remove("open");
       videoPanel.setAttribute("aria-hidden", "true");
+    }
+
+    function hideJuanaPanel() {
+      juanaActive = false;
+      card.classList.remove("juana-mode");
+      juanaPanel.classList.remove("open");
+      juanaPanel.setAttribute("aria-hidden", "true");
+      toggleJuanaAudioButton.textContent = "Detener";
     }
 
     function hideAugust3Panel() {
@@ -659,6 +720,7 @@
 
     function showVideo(video) {
       const videoSrc = getVideoSrc(video);
+      const encodedVideoSrc = videoSrc ? encodeURI(videoSrc) : "";
 
       if (!videoSrc) {
         hideVideo();
@@ -666,8 +728,8 @@
       }
 
       videoTitle.textContent = video.title || video.videoTitle || "Video complementario";
-      if (videoSource.getAttribute("src") !== videoSrc) {
-        videoSource.setAttribute("src", videoSrc);
+      if (videoSource.getAttribute("src") !== encodedVideoSrc) {
+        videoSource.setAttribute("src", encodedVideoSrc);
         ideaVideo.load();
       }
       videoPanel.classList.add("open");
@@ -679,6 +741,7 @@
 
       hideVideo();
       hideAugust3Panel();
+      hideJuanaPanel();
       setAudioSource(zones[activeZone].audio);
       zoneAudio.load();
       zoneAudio.currentTime = 0;
@@ -703,6 +766,7 @@
       clearAudio();
       stopVideo();
       hideAugust3Panel();
+      hideJuanaPanel();
       showVideo(video);
       videoModeActive = true;
       card.classList.add("video-mode");
@@ -755,9 +819,13 @@
       stopAudio();
       hideVideo();
       hideAugust3Panel();
+      hideJuanaPanel();
       setAudioSource(zone.audio);
       zoneAudio.setAttribute("aria-label", `Audio: ${zone.title}`);
       showAugust3Button.classList.toggle("show", key === "contexto");
+      showVirginButton.classList.toggle("show", key === "desarrollo");
+      showJuanaButton.classList.toggle("show", key === "desarrollo");
+      showSocialIntegrationButton.classList.toggle("show", key === "vida");
       showVideoButton.classList.toggle("show", Boolean(zone.videoLocalSrc || zone.videoWebSrc));
       showCaravacaVideoButton.classList.toggle("show", Boolean(zone.extraVideos?.length));
       card.classList.add("open");
@@ -772,15 +840,67 @@
       stopAudio();
       stopVideo();
       hideAugust3Panel();
+      hideJuanaPanel();
       videoModeActive = false;
       card.classList.remove("video-mode");
       activeZone = null;
       card.classList.remove("open");
       card.setAttribute("aria-hidden", "true");
       showAugust3Button.classList.remove("show");
+      showVirginButton.classList.remove("show");
+      showJuanaButton.classList.remove("show");
+      showSocialIntegrationButton.classList.remove("show");
       showVideoButton.classList.remove("show");
       showCaravacaVideoButton.classList.remove("show");
       hotspots.forEach((hotspot) => hotspot.classList.remove("active"));
+    }
+
+    function showJuana() {
+      if (activeZone !== "desarrollo") return;
+
+      clearAudio();
+      hideVideo();
+      hideAugust3Panel();
+      juanaActive = true;
+      card.classList.add("juana-mode");
+      toggleJuanaAudioButton.textContent = "Detener";
+      juanaPanel.classList.add("open");
+      juanaPanel.setAttribute("aria-hidden", "false");
+      setAudioSource(zones.desarrollo.juana.audio);
+      zoneAudio.load();
+      zoneAudio.currentTime = 0;
+      zoneAudio.setAttribute("aria-label", `Audio: ${zones.desarrollo.juana.title}`);
+      zoneAudio.play().then(() => {
+        listenAgain.textContent = "Detener";
+      }).catch(() => {
+        listenAgain.textContent = "Escuchar";
+      });
+    }
+
+    function toggleJuanaAudio() {
+      if (!juanaActive) return;
+
+      if (zoneAudio.paused) {
+        zoneAudio.play().then(() => {
+          toggleJuanaAudioButton.textContent = "Detener";
+          listenAgain.textContent = "Detener";
+        }).catch(() => {});
+        return;
+      }
+
+      zoneAudio.pause();
+      toggleJuanaAudioButton.textContent = "Continuar";
+      listenAgain.textContent = "Escuchar";
+    }
+
+    function returnFromJuana() {
+      if (activeZone !== "desarrollo") return;
+
+      clearAudio();
+      hideJuanaPanel();
+      setAudioSource(zones.desarrollo.audio);
+      zoneAudio.setAttribute("aria-label", `Audio: ${zones.desarrollo.title}`);
+      listenAgain.textContent = "Escuchar";
     }
 
     function showAugust3() {
@@ -788,6 +908,7 @@
 
       clearAudio();
       hideVideo();
+      hideJuanaPanel();
       august3Active = true;
       card.classList.add("august-mode");
       toggleAugust3AudioButton.textContent = "Detener";
@@ -844,6 +965,9 @@
         toggleAugust3AudioButton.textContent = "Continuar";
         august3Author.classList.add("show");
       }
+      if (juanaActive) {
+        toggleJuanaAudioButton.textContent = "Continuar";
+      }
     });
 
     ideaVideo.addEventListener("play", () => {
@@ -858,8 +982,21 @@
     document.querySelector("#closeCard").addEventListener("click", closeCard);
     listenAgain.addEventListener("click", toggleAudio);
     showAugust3Button.addEventListener("click", showAugust3);
+    showVirginButton.addEventListener("click", () => {
+      if (activeZone === "desarrollo") {
+        showAndPlayVideo(zones.desarrollo.virginVideo);
+      }
+    });
+    showJuanaButton.addEventListener("click", showJuana);
+    showSocialIntegrationButton.addEventListener("click", () => {
+      if (activeZone === "vida") {
+        showAndPlayVideo(zones.vida.socialIntegrationVideo);
+      }
+    });
     toggleAugust3AudioButton.addEventListener("click", toggleAugust3Audio);
     returnFromAugust3Button.addEventListener("click", returnFromAugust3);
+    toggleJuanaAudioButton.addEventListener("click", toggleJuanaAudio);
+    returnFromJuanaButton.addEventListener("click", returnFromJuana);
     toggleVideoPlaybackButton.addEventListener("click", toggleVideoPlayback);
     returnFromVideoButton.addEventListener("click", returnFromVideoMode);
 
