@@ -506,7 +506,7 @@
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
       <button class="listen-button context-button" type="button" id="showAugust3">3 agosto</button>
       <button class="listen-button development-button" type="button" id="showVirgin">Virgen de los Ángeles</button>
-      <button class="listen-button development-button" type="button" id="showJuana">Juan Pereira</button>
+      <button class="listen-button development-button" type="button" id="showJuana">Juana Pereira</button>
       <button class="listen-button life-button" type="button" id="showSocialIntegration">Integración social y oficios</button>
       <button class="listen-button video-button" type="button" id="showVideo">Obispo Morel</button>
       <button class="listen-button video-button" type="button" id="showCaravacaVideo">Cruz de Caravaca</button>
@@ -580,7 +580,7 @@
         },
         juana: {
           title: "Juana Pereira",
-          audio: "Juana Pereira.mp3"
+          localSrc: "Juana Pereira.mp4"
         }
       },
       vida: {
@@ -869,23 +869,7 @@
     function showJuana() {
       if (activeZone !== "desarrollo") return;
 
-      clearAudio();
-      hideVideo();
-      hideAugust3Panel();
-      juanaActive = true;
-      card.classList.add("juana-mode");
-      toggleJuanaAudioButton.textContent = "Detener";
-      juanaPanel.classList.add("open");
-      juanaPanel.setAttribute("aria-hidden", "false");
-      setAudioSource(zones.desarrollo.juana.audio);
-      zoneAudio.load();
-      zoneAudio.currentTime = 0;
-      zoneAudio.setAttribute("aria-label", `Audio: ${zones.desarrollo.juana.title}`);
-      zoneAudio.play().then(() => {
-        listenAgain.textContent = "Detener";
-      }).catch(() => {
-        listenAgain.textContent = "Escuchar";
-      });
+      showAndPlayVideo(zones.desarrollo.juana);
     }
 
     function toggleJuanaAudio() {
