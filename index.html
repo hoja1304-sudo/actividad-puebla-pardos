@@ -270,6 +270,7 @@
       display: block;
       width: 100%;
       max-height: 48vh;
+      object-fit: contain;
       border: 1px solid rgba(29, 26, 20, 0.12);
       border-radius: 7px;
       background: #0d1815;
@@ -427,6 +428,37 @@
         padding: 18px;
       }
 
+      .card.video-mode {
+        top: 10px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .card.video-mode .video-panel {
+        min-height: 0;
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
+
+      .card.video-mode .video-panel.open {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+      }
+
+      .card.video-mode .video-panel h3,
+      .card.video-mode .video-actions {
+        flex: 0 0 auto;
+      }
+
+      .card.video-mode .video-panel video {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none;
+      }
+
       .hint {
         margin: 10px 10px 0;
       }
@@ -491,7 +523,7 @@
     </div>
     <div class="video-panel" id="videoPanel" aria-hidden="true">
       <h3 id="videoTitle">Video complementario</h3>
-      <video id="ideaVideo" controls preload="metadata">
+      <video id="ideaVideo" controls preload="metadata" playsinline webkit-playsinline>
         <source id="videoSource" src="" type="video/mp4">
         Tu navegador no puede reproducir este video.
       </video>
