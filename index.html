@@ -266,6 +266,17 @@
       text-transform: uppercase;
     }
 
+    .video-credit {
+      display: none;
+      margin: -2px 0 12px;
+      color: rgba(29, 26, 20, 0.66);
+      font: 0.78rem/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .video-credit.show {
+      display: block;
+    }
+
     .video-panel video {
       display: block;
       width: 100%;
@@ -523,6 +534,7 @@
     </div>
     <div class="video-panel" id="videoPanel" aria-hidden="true">
       <h3 id="videoTitle">Video complementario</h3>
+      <p class="video-credit" id="videoCredit"></p>
       <video id="ideaVideo" controls preload="metadata" playsinline webkit-playsinline>
         <source id="videoSource" src="" type="video/mp4">
         Tu navegador no puede reproducir este video.
@@ -563,7 +575,8 @@
         virginVideo: {
           title: "La Leyenda Virgen de los Ángeles",
           localSrc: "La Leyenda Virgen de los Ángeles.mp4",
-          webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/virgen-angeles-leyenda/La.Leyenda.Virgen.de.los.Angeles.mp4"
+          webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/virgen-angeles-leyenda/La.Leyenda.Virgen.de.los.Angeles.mp4",
+          credit: "Cfr. Eladio Prado-Breve Historia. Tomado de: Arrieta, Víctor Manuel. La Basílica de Nuestra Señora de Los Ángeles Consagrada"
         },
         juana: {
           title: "Juana Pereira",
@@ -615,6 +628,7 @@
     const zoneAudio = document.querySelector("#zoneAudio");
     const videoPanel = document.querySelector("#videoPanel");
     const videoTitle = document.querySelector("#videoTitle");
+    const videoCredit = document.querySelector("#videoCredit");
     const ideaVideo = document.querySelector("#ideaVideo");
     const videoSource = document.querySelector("#videoSource");
     const toggleVideoPlaybackButton = document.querySelector("#toggleVideoPlayback");
@@ -723,6 +737,8 @@
       }
 
       videoTitle.textContent = video.title || video.videoTitle || "Video complementario";
+      videoCredit.textContent = video.credit || "";
+      videoCredit.classList.toggle("show", Boolean(video.credit));
       if (videoSource.getAttribute("src") !== encodedVideoSrc) {
         videoSource.setAttribute("src", encodedVideoSrc);
         ideaVideo.load();
