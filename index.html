@@ -412,6 +412,20 @@
       font: 0.95rem/1.45 system-ui, sans-serif;
     }
 
+    .author-credit {
+      margin: 10px 0 0;
+      color: rgba(246, 239, 217, 0.66);
+      font: 0.78rem/1.45 system-ui, sans-serif;
+      text-align: center;
+      letter-spacing: 0;
+    }
+
+    .author-credit span {
+      display: inline-block;
+      padding: 7px 12px;
+      border-top: 1px solid rgba(201, 154, 61, 0.28);
+    }
+
     @media (max-width: 700px) {
       main {
         width: 100%;
@@ -473,6 +487,10 @@
       .hint {
         margin: 10px 10px 0;
       }
+
+      .author-credit {
+        margin: 8px 10px 0;
+      }
     }
   </style>
 </head>
@@ -495,6 +513,9 @@
     </section>
 
     <p class="hint">Toca o pasa el mouse sobre una sección del afiche para explorarla y escuchar su audio local.</p>
+    <p class="author-credit">
+      <span>Elaborado por: Alberto Jim&eacute;nez Ruiz. Asesor Regional de Matem&aacute;tica, DRE-Cartago.</span>
+    </p>
   </main>
 
   <aside class="card" id="infoCard" aria-live="polite" aria-hidden="true">
