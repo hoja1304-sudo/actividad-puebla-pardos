@@ -195,6 +195,13 @@
       display: none;
     }
 
+    .card.puebla-mode h2,
+    .card.puebla-mode > p,
+    .card.puebla-mode .card-actions,
+    .card.puebla-mode .video-panel {
+      display: none;
+    }
+
     .card h2 {
       margin: 0 44px 10px 0;
       color: var(--green);
@@ -231,6 +238,10 @@
       display: none;
     }
 
+    .orden-button {
+      display: none;
+    }
+
     .video-button.show {
       display: inline-flex;
     }
@@ -244,6 +255,10 @@
     }
 
     .life-button.show {
+      display: inline-flex;
+    }
+
+    .orden-button.show {
       display: inline-flex;
     }
 
@@ -525,6 +540,7 @@
     <audio id="zoneAudio" preload="auto"></audio>
     <div class="card-actions">
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
+      <button class="listen-button orden-button" type="button" id="showPueblaPardos">La Puebla de los Pardos</button>
       <button class="listen-button context-button" type="button" id="showAugust3">3 agosto</button>
       <button class="listen-button development-button" type="button" id="showVirgin">Virgen de los Ángeles</button>
       <button class="listen-button development-button" type="button" id="showJuana">Juana Pereira</button>
@@ -551,6 +567,13 @@
       <div class="image-actions">
         <button class="listen-button" type="button" id="toggleJuanaAudio">Detener</button>
         <button class="listen-button" type="button" id="returnFromJuana">Regresar</button>
+      </div>
+    </div>
+    <div class="image-panel" id="pueblaPardosPanel" aria-hidden="true">
+      <h3>Puebla de los Pardos en la actualidad</h3>
+      <img src="Puebla de los Pardos en la actualidad.png" alt="Imagen 3D de la Puebla de los Pardos en la actualidad">
+      <div class="image-actions">
+        <button class="listen-button" type="button" id="returnFromPueblaPardos">Regresar</button>
       </div>
     </div>
     <div class="video-panel" id="videoPanel" aria-hidden="true">
@@ -662,10 +685,13 @@
     const showJuanaButton = document.querySelector("#showJuana");
     const showSocialIntegrationButton = document.querySelector("#showSocialIntegration");
     const juanaPanel = document.querySelector("#juanaPanel");
+    const pueblaPardosPanel = document.querySelector("#pueblaPardosPanel");
+    const showPueblaPardosButton = document.querySelector("#showPueblaPardos");
     const toggleAugust3AudioButton = document.querySelector("#toggleAugust3Audio");
     const returnFromAugust3Button = document.querySelector("#returnFromAugust3");
     const toggleJuanaAudioButton = document.querySelector("#toggleJuanaAudio");
     const returnFromJuanaButton = document.querySelector("#returnFromJuana");
+    const returnFromPueblaPardosButton = document.querySelector("#returnFromPueblaPardos");
     const showVideoButton = document.querySelector("#showVideo");
     const showCaravacaVideoButton = document.querySelector("#showCaravacaVideo");
     const hotspots = document.querySelectorAll(".hotspot");
@@ -710,6 +736,12 @@
       juanaPanel.classList.remove("open");
       juanaPanel.setAttribute("aria-hidden", "true");
       toggleJuanaAudioButton.textContent = "Detener";
+    }
+
+    function hidePueblaPardosPanel() {
+      card.classList.remove("puebla-mode");
+      pueblaPardosPanel.classList.remove("open");
+      pueblaPardosPanel.setAttribute("aria-hidden", "true");
     }
 
     function hideAugust3Panel() {
@@ -775,6 +807,7 @@
       hideVideo();
       hideAugust3Panel();
       hideJuanaPanel();
+      hidePueblaPardosPanel();
       setAudioSource(zones[activeZone].audio);
       zoneAudio.load();
       zoneAudio.currentTime = 0;
@@ -800,6 +833,7 @@
       stopVideo();
       hideAugust3Panel();
       hideJuanaPanel();
+      hidePueblaPardosPanel();
       showVideo(video);
       videoModeActive = true;
       card.classList.add("video-mode");
@@ -853,8 +887,10 @@
       hideVideo();
       hideAugust3Panel();
       hideJuanaPanel();
+      hidePueblaPardosPanel();
       setAudioSource(zone.audio);
       zoneAudio.setAttribute("aria-label", `Audio: ${zone.title}`);
+      showPueblaPardosButton.classList.toggle("show", key === "orden");
       showAugust3Button.classList.toggle("show", key === "contexto");
       showVirginButton.classList.toggle("show", key === "desarrollo");
       showJuanaButton.classList.toggle("show", key === "desarrollo");
@@ -874,11 +910,13 @@
       stopVideo();
       hideAugust3Panel();
       hideJuanaPanel();
+      hidePueblaPardosPanel();
       videoModeActive = false;
       card.classList.remove("video-mode");
       activeZone = null;
       card.classList.remove("open");
       card.setAttribute("aria-hidden", "true");
+      showPueblaPardosButton.classList.remove("show");
       showAugust3Button.classList.remove("show");
       showVirginButton.classList.remove("show");
       showJuanaButton.classList.remove("show");
@@ -915,8 +953,31 @@
 
       clearAudio();
       hideJuanaPanel();
+      hidePueblaPardosPanel();
       setAudioSource(zones.desarrollo.audio);
       zoneAudio.setAttribute("aria-label", `Audio: ${zones.desarrollo.title}`);
+      listenAgain.textContent = "Escuchar";
+    }
+
+    function showPueblaPardos() {
+      if (activeZone !== "orden") return;
+
+      clearAudio();
+      hideVideo();
+      hideAugust3Panel();
+      hideJuanaPanel();
+      card.classList.add("puebla-mode");
+      pueblaPardosPanel.classList.add("open");
+      pueblaPardosPanel.setAttribute("aria-hidden", "false");
+    }
+
+    function returnFromPueblaPardos() {
+      if (activeZone !== "orden") return;
+
+      clearAudio();
+      hidePueblaPardosPanel();
+      setAudioSource(zones.orden.audio);
+      zoneAudio.setAttribute("aria-label", `Audio: ${zones.orden.title}`);
       listenAgain.textContent = "Escuchar";
     }
 
@@ -926,6 +987,7 @@
       clearAudio();
       hideVideo();
       hideJuanaPanel();
+      hidePueblaPardosPanel();
       august3Active = true;
       card.classList.add("august-mode");
       toggleAugust3AudioButton.textContent = "Detener";
@@ -998,6 +1060,8 @@
 
     document.querySelector("#closeCard").addEventListener("click", closeCard);
     listenAgain.addEventListener("click", toggleAudio);
+    showPueblaPardosButton.addEventListener("click", showPueblaPardos);
+    returnFromPueblaPardosButton.addEventListener("click", returnFromPueblaPardos);
     showAugust3Button.addEventListener("click", showAugust3);
     showVirginButton.addEventListener("click", () => {
       if (activeZone === "desarrollo") {
