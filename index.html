@@ -188,6 +188,10 @@
       display: none;
     }
 
+    .card.video-mode {
+      width: min(720px, calc(100vw - 28px));
+    }
+
     .card.juana-mode h2,
     .card.juana-mode > p,
     .card.juana-mode .card-actions,
@@ -295,6 +299,7 @@
     .video-panel video {
       display: block;
       width: 100%;
+      aspect-ratio: 16 / 9;
       max-height: 48vh;
       object-fit: contain;
       border: 1px solid rgba(29, 26, 20, 0.12);
@@ -470,6 +475,7 @@
 
       .card.video-mode {
         top: 10px;
+        width: auto;
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -498,9 +504,8 @@
       }
 
       .card.video-mode .video-panel video {
-        flex: 1 1 auto;
+        flex: 0 1 auto;
         min-height: 0;
-        max-height: none;
         width: 100%;
         height: auto;
         max-height: calc(100dvh - 140px);
@@ -669,7 +674,7 @@
         text: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
         audio: "Idea clave.mp3",
         august3Video: {
-          title: "3 de agosto",
+          title: "Decreto Ejecutivo N° 41626-MEP-MCJ",
           localSrc: "video 3 de agosto.mp4",
           webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-3-de-agosto/video.3.de.agosto.mp4"
         },
