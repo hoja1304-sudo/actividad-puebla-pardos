@@ -493,10 +493,17 @@
         flex: 0 0 auto;
       }
 
+      .card.video-mode .video-panel h3 {
+        margin-right: 42px;
+      }
+
       .card.video-mode .video-panel video {
         flex: 1 1 auto;
         min-height: 0;
         max-height: none;
+        width: 100%;
+        height: auto;
+        max-height: calc(100dvh - 140px);
       }
 
       .hint {
@@ -514,7 +521,7 @@
     <section class="stage" aria-label="Afiche histórico interactivo">
       <img
         class="poster"
-        src="afiche.png"
+        src="afiche P.png"
         alt="Afiche sobre la Fundación de la Puebla de los Pardos en Cartago, Costa Rica, 1650">
 
       <button class="hotspot" type="button" data-zone="fundacion" style="left: 1.1%; top: 0.8%; width: 97.8%; height: 17.0%;" aria-label="Fundación de la Puebla de los Pardos"></button>
@@ -527,7 +534,7 @@
       <button class="hotspot" type="button" data-zone="idea" style="left: 35.4%; top: 91.6%; width: 63.4%; height: 7.1%;" aria-label="Idea clave"></button>
     </section>
 
-    <p class="hint">Toca o pasa el mouse sobre una sección del afiche para explorarla y escuchar su audio local.</p>
+    <p class="hint">Toca o pasa el mouse sobre una sección del afiche para explorarla y escuchar su audio o video local.</p>
     <p class="author-credit">
       <span>Elaborado por: Alberto Jim&eacute;nez Ruiz. Asesor Regional de Matem&aacute;tica, DRE-Cartago.</span>
     </p>
@@ -570,7 +577,7 @@
       </div>
     </div>
     <div class="image-panel" id="pueblaPardosPanel" aria-hidden="true">
-      <h3>Puebla de los Pardos en la actualidad</h3>
+      <h3>Ubicación actual de La Puebla de los Pardos en la provincia de Cartago.</h3>
       <img src="Puebla de los Pardos en la actualidad.png" alt="Imagen 3D de la Puebla de los Pardos en la actualidad">
       <div class="image-actions">
         <button class="listen-button" type="button" id="returnFromPueblaPardos">Regresar</button>
@@ -610,7 +617,14 @@
       orden: {
         title: "Orden de fundación",
         text: "En 1650 se ordenó concentrar a esta población en un solar específico. La medida buscaba vigilar, evangelizar y separar a estos grupos del centro urbano.",
-        audio: "Orden de fundaciòn.mp3?v=b09e63b"
+        audio: "Orden de fundaciòn.mp3?v=b09e63b",
+        extraVideos: [
+          {
+            title: "Cruz de caravaca en la actualidad",
+            localSrc: "cruz-caravaca-con-audio.mp4",
+            webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/cruz-caravaca-actualidad/cruz-caravaca-con-audio.mp4"
+          }
+        ]
       },
       desarrollo: {
         title: "Desarrollo inicial",
@@ -654,16 +668,14 @@
         title: "Idea clave",
         text: "La Puebla de los Pardos nació como un proyecto colonial de control, pero sus habitantes también construyeron formas propias de organización, identidad y participación social.",
         audio: "Idea clave.mp3",
+        august3Video: {
+          title: "3 de agosto",
+          localSrc: "video 3 de agosto.mp4",
+          webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-3-de-agosto/video.3.de.agosto.mp4"
+        },
         videoTitle: "Historia de la Puebla de los Ángeles",
         videoLocalSrc: "video-puebla-angeles.mp4",
-        videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/video-puebla-angeles.mp4",
-        extraVideos: [
-          {
-            title: "Cruz de caravaca en la actualidad",
-            localSrc: "cruz-caravaca-con-audio.mp4",
-            webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/cruz-caravaca-actualidad/cruz-caravaca-con-audio.mp4"
-          }
-        ]
+        videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/video-puebla-angeles.mp4"
       }
     };
 
@@ -761,8 +773,8 @@
       august3Panel.classList.remove("open");
       august3Panel.setAttribute("aria-hidden", "true");
       august3Author.classList.remove("show");
-      setAudioSource(zones.contexto.audio);
-      zoneAudio.setAttribute("aria-label", `Audio: ${zones.contexto.title}`);
+      setAudioSource(zones[activeZone].audio);
+      zoneAudio.setAttribute("aria-label", `Audio: ${zones[activeZone].title}`);
       listenAgain.textContent = "Escuchar";
       toggleAugust3AudioButton.textContent = "Detener";
     }
@@ -891,7 +903,7 @@
       setAudioSource(zone.audio);
       zoneAudio.setAttribute("aria-label", `Audio: ${zone.title}`);
       showPueblaPardosButton.classList.toggle("show", key === "orden");
-      showAugust3Button.classList.toggle("show", key === "contexto");
+      showAugust3Button.classList.toggle("show", key === "idea");
       showVirginButton.classList.toggle("show", key === "desarrollo");
       showJuanaButton.classList.toggle("show", key === "desarrollo");
       showSocialIntegrationButton.classList.toggle("show", key === "vida");
@@ -982,27 +994,9 @@
     }
 
     function showAugust3() {
-      if (activeZone !== "contexto") return;
+      if (activeZone !== "idea") return;
 
-      clearAudio();
-      hideVideo();
-      hideJuanaPanel();
-      hidePueblaPardosPanel();
-      august3Active = true;
-      card.classList.add("august-mode");
-      toggleAugust3AudioButton.textContent = "Detener";
-      august3Author.classList.remove("show");
-      august3Panel.classList.add("open");
-      august3Panel.setAttribute("aria-hidden", "false");
-      setAudioSource("3 agosto.mp3");
-      zoneAudio.load();
-      zoneAudio.currentTime = 0;
-      zoneAudio.setAttribute("aria-label", "Audio: 3 agosto");
-      zoneAudio.play().then(() => {
-        listenAgain.textContent = "Detener";
-      }).catch(() => {
-        listenAgain.textContent = "Escuchar";
-      });
+      showAndPlayVideo(zones.idea.august3Video);
     }
 
     function toggleAugust3Audio() {
@@ -1022,7 +1016,7 @@
     }
 
     function returnFromAugust3() {
-      if (activeZone !== "contexto") return;
+      if (activeZone !== "idea") return;
 
       clearAudio();
       returnToContextCard();
