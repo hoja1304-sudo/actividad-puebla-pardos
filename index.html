@@ -298,9 +298,9 @@
 
     .video-frame {
       display: block;
-      width: 100%;
+      width: min(100%, calc(48vh * 16 / 9));
       aspect-ratio: 16 / 9;
-      max-height: 48vh;
+      margin-inline: auto;
       overflow: hidden;
       border: 1px solid rgba(29, 26, 20, 0.12);
       border-radius: 7px;
@@ -514,7 +514,7 @@
       .card.video-mode .video-frame {
         flex: 0 1 auto;
         min-height: 0;
-        width: 100%;
+        width: min(100%, calc((100dvh - 140px) * 16 / 9));
         max-height: calc(100dvh - 140px);
       }
 
@@ -700,6 +700,7 @@
     const videoPanel = document.querySelector("#videoPanel");
     const videoTitle = document.querySelector("#videoTitle");
     const videoCredit = document.querySelector("#videoCredit");
+    const videoFrame = document.querySelector(".video-frame");
     const ideaVideo = document.querySelector("#ideaVideo");
     const videoSource = document.querySelector("#videoSource");
     const toggleVideoPlaybackButton = document.querySelector("#toggleVideoPlayback");
@@ -819,6 +820,7 @@
       videoTitle.textContent = video.title || video.videoTitle || "Video complementario";
       videoCredit.textContent = video.credit || "";
       videoCredit.classList.toggle("show", Boolean(video.credit));
+      videoFrame.style.aspectRatio = "16 / 9";
       if (videoSource.getAttribute("src") !== encodedVideoSrc) {
         videoSource.setAttribute("src", encodedVideoSrc);
         ideaVideo.load();
