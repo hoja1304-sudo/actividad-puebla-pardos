@@ -192,6 +192,10 @@
       width: min(720px, calc(100vw - 28px));
     }
 
+    .card.video-mode.portrait-video {
+      width: min(420px, calc(100vw - 28px));
+    }
+
     .card.juana-mode h2,
     .card.juana-mode > p,
     .card.juana-mode .card-actions,
@@ -307,6 +311,10 @@
       border-radius: 7px;
       background: #0d1815;
       box-shadow: 0 16px 34px rgba(8, 19, 15, 0.18);
+    }
+
+    .video-frame.portrait-video {
+      width: min(100%, calc(62dvh * 9 / 16), 320px);
     }
 
     .video-panel video {
@@ -505,6 +513,14 @@
 
       .card.video-mode .video-frame {
         width: 100%;
+      }
+
+      .card.video-mode.portrait-video {
+        width: min(360px, calc(100vw - 20px));
+      }
+
+      .card.video-mode .video-frame.portrait-video {
+        width: min(100%, calc((100dvh - 210px) * 9 / 16));
       }
 
       .hint {
@@ -742,7 +758,8 @@
       stopVideo();
       activeVideoAudio = "";
       videoModeActive = false;
-      card.classList.remove("video-mode");
+      card.classList.remove("video-mode", "portrait-video");
+      videoFrame.classList.remove("portrait-video");
       toggleVideoPlaybackButton.textContent = "Detener";
       videoPanel.classList.remove("open");
       videoPanel.setAttribute("aria-hidden", "true");
@@ -812,6 +829,9 @@
       videoCredit.textContent = video.credit || "";
       videoCredit.classList.toggle("show", Boolean(video.credit));
       videoFrame.style.aspectRatio = video.aspectRatio || "16 / 9";
+      const isPortraitVideo = video.aspectRatio === "9 / 16";
+      card.classList.toggle("portrait-video", isPortraitVideo);
+      videoFrame.classList.toggle("portrait-video", isPortraitVideo);
       if (videoSource.getAttribute("src") !== encodedVideoSrc) {
         videoSource.setAttribute("src", encodedVideoSrc);
         ideaVideo.load();
@@ -888,7 +908,8 @@
       clearAudio();
       activeVideoAudio = "";
       videoModeActive = false;
-      card.classList.remove("video-mode");
+      card.classList.remove("video-mode", "portrait-video");
+      videoFrame.classList.remove("portrait-video");
       videoPanel.classList.remove("open");
       videoPanel.setAttribute("aria-hidden", "true");
       toggleVideoPlaybackButton.textContent = "Detener";
@@ -931,7 +952,8 @@
       hideJuanaPanel();
       hidePueblaPardosPanel();
       videoModeActive = false;
-      card.classList.remove("video-mode");
+      card.classList.remove("video-mode", "portrait-video");
+      videoFrame.classList.remove("portrait-video");
       activeZone = null;
       card.classList.remove("open");
       card.setAttribute("aria-hidden", "true");
