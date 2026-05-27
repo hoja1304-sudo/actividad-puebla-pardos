@@ -485,29 +485,18 @@
       }
 
       .card.video-mode {
-        top: 10px;
         width: auto;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        overflow: auto;
       }
 
       .card.video-mode .video-panel {
-        min-height: 0;
         margin-top: 0;
         padding-top: 0;
         border-top: 0;
       }
 
       .card.video-mode .video-panel.open {
-        display: flex;
-        flex: 1 1 auto;
-        flex-direction: column;
-      }
-
-      .card.video-mode .video-panel h3,
-      .card.video-mode .video-actions {
-        flex: 0 0 auto;
+        display: block;
       }
 
       .card.video-mode .video-panel h3 {
@@ -515,11 +504,7 @@
       }
 
       .card.video-mode .video-frame {
-        --video-mobile-height: min(calc((100vw - 56px) * 9 / 16), calc(100dvh - 190px));
-        flex: 0 1 auto;
-        min-height: 0;
-        width: min(100%, calc(var(--video-mobile-height) * 16 / 9));
-        max-height: var(--video-mobile-height);
+        width: 100%;
       }
 
       .hint {
