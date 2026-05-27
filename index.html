@@ -635,12 +635,14 @@
         audio: "Desarrollo inicial.mp3",
         virginVideo: {
           title: "La Leyenda Virgen de los Ángeles",
+          aspectRatio: "9 / 16",
           localSrc: "La Leyenda Virgen de los Ángeles.mp4",
           webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/virgen-angeles-leyenda/La.Leyenda.Virgen.de.los.Angeles.mp4",
           credit: "Cfr. Eladio Prado-Breve Historia. Tomado de: Arrieta, Víctor Manuel. La Basílica de Nuestra Señora de Los Ángeles Consagrada"
         },
         juana: {
           title: "Juana Pereira",
+          aspectRatio: "9 / 16",
           localSrc: "Juana Pereira.mp4",
           webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/juana-pereira/Juana.Pereira.mp4"
         }
@@ -809,7 +811,7 @@
       videoTitle.textContent = video.title || video.videoTitle || "Video complementario";
       videoCredit.textContent = video.credit || "";
       videoCredit.classList.toggle("show", Boolean(video.credit));
-      videoFrame.style.aspectRatio = "16 / 9";
+      videoFrame.style.aspectRatio = video.aspectRatio || "16 / 9";
       if (videoSource.getAttribute("src") !== encodedVideoSrc) {
         videoSource.setAttribute("src", encodedVideoSrc);
         ideaVideo.load();
