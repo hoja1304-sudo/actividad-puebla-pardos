@@ -238,6 +238,10 @@
       display: none;
     }
 
+    .commemorative-button {
+      display: none;
+    }
+
     .development-button {
       display: none;
     }
@@ -255,6 +259,10 @@
     }
 
     .context-button.show {
+      display: inline-flex;
+    }
+
+    .commemorative-button.show {
       display: inline-flex;
     }
 
@@ -565,6 +573,7 @@
       <button class="listen-button" type="button" id="listenAgain">Escuchar</button>
       <button class="listen-button orden-button" type="button" id="showPueblaPardos">La Puebla de los Pardos</button>
       <button class="listen-button context-button" type="button" id="showAugust3">Decretos</button>
+      <button class="listen-button commemorative-button" type="button" id="showCommemorativeActivities">Actividades Conmemorativas</button>
       <button class="listen-button development-button" type="button" id="showVirgin">Virgen de los Ángeles</button>
       <button class="listen-button development-button" type="button" id="showJuana">Juana Pereira</button>
       <button class="listen-button life-button" type="button" id="showSocialIntegration">Integración social y oficios</button>
@@ -683,6 +692,14 @@
           webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-3-de-agosto/video-3-agosto-horizontal.mp4",
           aspectRatio: "16 / 9"
         },
+        commemorativeVideo: {
+          title: "Actividades conmemorativas realizadas por la comisión regional de interculturalidad",
+          localSrc: "comision-interculturalidad-horizontal.mp4",
+          localMobileSrc: "comision-interculturalidad-celular.mp4",
+          webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/comision-interculturalidad/comision-interculturalidad-horizontal.mp4",
+          webMobileSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/comision-interculturalidad/comision-interculturalidad-celular.mp4",
+          aspectRatio: "16 / 9"
+        },
         videoTitle: "Historia de la Puebla de los Ángeles",
         videoLocalSrc: "video-puebla-angeles.mp4",
         videoWebSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/video-puebla-angeles/video-puebla-angeles.mp4"
@@ -704,6 +721,7 @@
     const august3Panel = document.querySelector("#august3Panel");
     const august3Author = document.querySelector("#august3Author");
     const showAugust3Button = document.querySelector("#showAugust3");
+    const showCommemorativeActivitiesButton = document.querySelector("#showCommemorativeActivities");
     const showVirginButton = document.querySelector("#showVirgin");
     const showJuanaButton = document.querySelector("#showJuana");
     const showSocialIntegrationButton = document.querySelector("#showSocialIntegration");
@@ -793,12 +811,21 @@
 
     function getVideoSrc(video) {
       const isLocalPage = location.protocol === "file:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+      const useMobileVideo = window.matchMedia("(max-width: 700px)").matches;
 
       if (isLocalPage) {
-        return video.localSrc || video.videoLocalSrc || video.webSrc || video.videoWebSrc;
+        if (useMobileVideo) {
+          return video.localMobileSrc || video.mobileSrc || video.localSrc || video.videoLocalSrc || video.webSrc || video.videoWebSrc;
+        }
+
+        return video.localSrc || video.videoLocalSrc || video.localMobileSrc || video.mobileSrc || video.webSrc || video.videoWebSrc;
       }
 
-      return video.webSrc || video.videoWebSrc || video.localSrc || video.videoLocalSrc;
+      if (useMobileVideo) {
+        return video.webMobileSrc || video.mobileSrc || video.webSrc || video.videoWebSrc || video.localMobileSrc || video.localSrc || video.videoLocalSrc;
+      }
+
+      return video.webSrc || video.videoWebSrc || video.webMobileSrc || video.mobileSrc || video.localSrc || video.videoLocalSrc || video.localMobileSrc;
     }
 
     function setAudioSource(src) {
@@ -921,6 +948,7 @@
       zoneAudio.setAttribute("aria-label", `Audio: ${zone.title}`);
       showPueblaPardosButton.classList.toggle("show", key === "orden");
       showAugust3Button.classList.toggle("show", key === "idea");
+      showCommemorativeActivitiesButton.classList.toggle("show", key === "idea");
       showVirginButton.classList.toggle("show", key === "desarrollo");
       showJuanaButton.classList.toggle("show", key === "desarrollo");
       showSocialIntegrationButton.classList.toggle("show", key === "vida");
@@ -948,6 +976,7 @@
       card.setAttribute("aria-hidden", "true");
       showPueblaPardosButton.classList.remove("show");
       showAugust3Button.classList.remove("show");
+      showCommemorativeActivitiesButton.classList.remove("show");
       showVirginButton.classList.remove("show");
       showJuanaButton.classList.remove("show");
       showSocialIntegrationButton.classList.remove("show");
@@ -1075,6 +1104,11 @@
     showPueblaPardosButton.addEventListener("click", showPueblaPardos);
     returnFromPueblaPardosButton.addEventListener("click", returnFromPueblaPardos);
     showAugust3Button.addEventListener("click", showAugust3);
+    showCommemorativeActivitiesButton.addEventListener("click", () => {
+      if (activeZone === "idea") {
+        showAndPlayVideo(zones.idea.commemorativeVideo);
+      }
+    });
     showVirginButton.addEventListener("click", () => {
       if (activeZone === "desarrollo") {
         showAndPlayVideo(zones.desarrollo.virginVideo);
