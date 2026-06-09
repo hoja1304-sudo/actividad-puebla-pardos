@@ -647,6 +647,7 @@
       <img src="Puebla de los Pardos en la actualidad.png" alt="Imagen 3D de la Puebla de los Pardos en la actualidad">
       <div class="image-actions">
         <button class="listen-button" type="button" id="returnFromPueblaPardos">Regresar</button>
+        <button class="listen-button" type="button" id="showAerialView">Vista aerea</button>
         <button class="listen-button" type="button" id="showCurrentPoints">Puntos actuales para su ubicación</button>
       </div>
     </div>
@@ -730,7 +731,12 @@
             localSrc: "cruz-caravaca-con-audio.mp4",
             webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/cruz-caravaca-actualidad/cruz-caravaca-con-audio.mp4"
           }
-        ]
+        ],
+        aerialVideo: {
+          title: "Vista aerea de La Puebla de los Pardos",
+          localSrc: "Vista con Dron de La Puebla de los Pardos.mp4",
+          webSrc: "https://github.com/hoja1304-sudo/actividad-puebla-pardos/releases/download/vista-aerea-puebla-pardos/Vista.con.Dron.de.La.Puebla.de.los.Pardos.mp4"
+        }
       },
       desarrollo: {
         title: "Desarrollo inicial",
@@ -810,6 +816,7 @@
     const currentPointsPanel = document.querySelector("#currentPointsPanel");
     const sourcesPanel = document.querySelector("#sourcesPanel");
     const showPueblaPardosButton = document.querySelector("#showPueblaPardos");
+    const showAerialViewButton = document.querySelector("#showAerialView");
     const showCurrentPointsButton = document.querySelector("#showCurrentPoints");
     const toggleAugust3AudioButton = document.querySelector("#toggleAugust3Audio");
     const returnFromAugust3Button = document.querySelector("#returnFromAugust3");
@@ -824,6 +831,7 @@
     const listenAgain = document.querySelector("#listenAgain");
     let activeZone = null;
     let activeVideoAudio = "";
+    let activeVideoReturnTarget = "";
     let videoModeActive = false;
     let august3Active = false;
     let juanaActive = false;
@@ -849,6 +857,7 @@
     function hideVideo() {
       stopVideo();
       activeVideoAudio = "";
+      activeVideoReturnTarget = "";
       videoModeActive = false;
       card.classList.remove("video-mode", "portrait-video");
       videoFrame.classList.remove("portrait-video");
@@ -981,7 +990,7 @@
       stopAudio();
     }
 
-    function showAndPlayVideo(video) {
+    function showAndPlayVideo(video, returnTarget = "") {
       clearAudio();
       stopVideo();
       hideAugust3Panel();
@@ -991,6 +1000,7 @@
       hideSourcesPanel();
       showVideo(video);
       videoModeActive = true;
+      activeVideoReturnTarget = returnTarget;
       card.classList.add("video-mode");
       toggleVideoPlaybackButton.textContent = "Detener";
       activeVideoAudio = "";
@@ -1024,6 +1034,8 @@
       clearAudio();
       activeVideoAudio = "";
       videoModeActive = false;
+      const returnTarget = activeVideoReturnTarget;
+      activeVideoReturnTarget = "";
       card.classList.remove("video-mode", "portrait-video");
       videoFrame.classList.remove("portrait-video");
       videoPanel.classList.remove("open");
@@ -1032,6 +1044,12 @@
       setAudioSource(zones[activeZone].audio);
       zoneAudio.setAttribute("aria-label", `Audio: ${zones[activeZone].title}`);
       listenAgain.textContent = "Escuchar";
+
+      if (returnTarget === "pueblaPardos") {
+        card.classList.add("puebla-mode");
+        pueblaPardosPanel.classList.add("open");
+        pueblaPardosPanel.setAttribute("aria-hidden", "false");
+      }
     }
 
     function openCard(key) {
@@ -1148,6 +1166,12 @@
       listenAgain.textContent = "Escuchar";
     }
 
+    function showAerialView() {
+      if (activeZone !== "orden") return;
+
+      showAndPlayVideo(zones.orden.aerialVideo, "pueblaPardos");
+    }
+
     function showCurrentPoints() {
       if (activeZone !== "orden") return;
 
@@ -1260,6 +1284,7 @@
     listenAgain.addEventListener("click", toggleAudio);
     showPueblaPardosButton.addEventListener("click", showPueblaPardos);
     returnFromPueblaPardosButton.addEventListener("click", returnFromPueblaPardos);
+    showAerialViewButton.addEventListener("click", showAerialView);
     showCurrentPointsButton.addEventListener("click", showCurrentPoints);
     returnFromCurrentPointsButton.addEventListener("click", returnFromCurrentPoints);
     showAugust3Button.addEventListener("click", showAugust3);
