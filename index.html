@@ -641,6 +641,14 @@
       <img src="Puebla de los Pardos en la actualidad.png" alt="Imagen 3D de la Puebla de los Pardos en la actualidad">
       <div class="image-actions">
         <button class="listen-button" type="button" id="returnFromPueblaPardos">Regresar</button>
+        <button class="listen-button" type="button" id="showCurrentPoints">Puntos actuales para su ubicación</button>
+      </div>
+    </div>
+    <div class="image-panel" id="currentPointsPanel" aria-hidden="true">
+      <h3>Ubicación de La Puebla de los Pardos con algunos puntos actuales</h3>
+      <img src="UbicacionActualLaPueblaPardosconPuntosActuales.png" alt="Ubicación de La Puebla de los Pardos con algunos puntos actuales">
+      <div class="image-actions">
+        <button class="listen-button" type="button" id="returnFromCurrentPoints">Regresar</button>
       </div>
     </div>
     <div class="image-panel sources-panel" id="sourcesPanel" aria-hidden="true">
@@ -773,13 +781,16 @@
     const showSocialIntegrationButton = document.querySelector("#showSocialIntegration");
     const juanaPanel = document.querySelector("#juanaPanel");
     const pueblaPardosPanel = document.querySelector("#pueblaPardosPanel");
+    const currentPointsPanel = document.querySelector("#currentPointsPanel");
     const sourcesPanel = document.querySelector("#sourcesPanel");
     const showPueblaPardosButton = document.querySelector("#showPueblaPardos");
+    const showCurrentPointsButton = document.querySelector("#showCurrentPoints");
     const toggleAugust3AudioButton = document.querySelector("#toggleAugust3Audio");
     const returnFromAugust3Button = document.querySelector("#returnFromAugust3");
     const toggleJuanaAudioButton = document.querySelector("#toggleJuanaAudio");
     const returnFromJuanaButton = document.querySelector("#returnFromJuana");
     const returnFromPueblaPardosButton = document.querySelector("#returnFromPueblaPardos");
+    const returnFromCurrentPointsButton = document.querySelector("#returnFromCurrentPoints");
     const returnFromSourcesButton = document.querySelector("#returnFromSources");
     const showVideoButton = document.querySelector("#showVideo");
     const showCaravacaVideoButton = document.querySelector("#showCaravacaVideo");
@@ -832,6 +843,11 @@
       card.classList.remove("puebla-mode");
       pueblaPardosPanel.classList.remove("open");
       pueblaPardosPanel.setAttribute("aria-hidden", "true");
+    }
+
+    function hideCurrentPointsPanel() {
+      currentPointsPanel.classList.remove("open");
+      currentPointsPanel.setAttribute("aria-hidden", "true");
     }
 
     function hideSourcesPanel() {
@@ -917,6 +933,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideCurrentPointsPanel();
       hideSourcesPanel();
       setAudioSource(zones[activeZone].audio);
       zoneAudio.load();
@@ -944,6 +961,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideCurrentPointsPanel();
       hideSourcesPanel();
       showVideo(video);
       videoModeActive = true;
@@ -1000,6 +1018,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideCurrentPointsPanel();
       hideSourcesPanel();
       setAudioSource(zone.audio);
       zoneAudio.setAttribute("aria-label", `Audio: ${zone.title}`);
@@ -1026,6 +1045,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideCurrentPointsPanel();
       hideSourcesPanel();
       videoModeActive = false;
       card.classList.remove("video-mode", "portrait-video");
@@ -1086,6 +1106,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hideSourcesPanel();
+      hideCurrentPointsPanel();
       card.classList.add("puebla-mode");
       pueblaPardosPanel.classList.add("open");
       pueblaPardosPanel.setAttribute("aria-hidden", "false");
@@ -1101,6 +1122,31 @@
       listenAgain.textContent = "Escuchar";
     }
 
+    function showCurrentPoints() {
+      if (activeZone !== "orden") return;
+
+      clearAudio();
+      hideVideo();
+      hideAugust3Panel();
+      hideJuanaPanel();
+      hideSourcesPanel();
+      pueblaPardosPanel.classList.remove("open");
+      pueblaPardosPanel.setAttribute("aria-hidden", "true");
+      card.classList.add("puebla-mode");
+      currentPointsPanel.classList.add("open");
+      currentPointsPanel.setAttribute("aria-hidden", "false");
+    }
+
+    function returnFromCurrentPoints() {
+      if (activeZone !== "orden") return;
+
+      clearAudio();
+      hideCurrentPointsPanel();
+      card.classList.add("puebla-mode");
+      pueblaPardosPanel.classList.add("open");
+      pueblaPardosPanel.setAttribute("aria-hidden", "false");
+    }
+
     function showSources() {
       if (activeZone !== "idea") return;
 
@@ -1109,6 +1155,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideCurrentPointsPanel();
       card.classList.add("sources-mode");
       sourcesPanel.classList.add("open");
       sourcesPanel.setAttribute("aria-hidden", "false");
@@ -1187,6 +1234,8 @@
     listenAgain.addEventListener("click", toggleAudio);
     showPueblaPardosButton.addEventListener("click", showPueblaPardos);
     returnFromPueblaPardosButton.addEventListener("click", returnFromPueblaPardos);
+    showCurrentPointsButton.addEventListener("click", showCurrentPoints);
+    returnFromCurrentPointsButton.addEventListener("click", returnFromCurrentPoints);
     showAugust3Button.addEventListener("click", showAugust3);
     showCommemorativeActivitiesButton.addEventListener("click", () => {
       if (activeZone === "idea") {
