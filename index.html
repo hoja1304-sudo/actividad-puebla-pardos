@@ -210,6 +210,13 @@
       display: none;
     }
 
+    .card.sources-mode h2,
+    .card.sources-mode > p,
+    .card.sources-mode .card-actions,
+    .card.sources-mode .video-panel {
+      display: none;
+    }
+
     .card h2 {
       margin: 0 44px 10px 0;
       color: var(--green);
@@ -828,6 +835,7 @@
     }
 
     function hideSourcesPanel() {
+      card.classList.remove("sources-mode");
       sourcesPanel.classList.remove("open");
       sourcesPanel.setAttribute("aria-hidden", "true");
     }
@@ -1101,6 +1109,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      card.classList.add("sources-mode");
       sourcesPanel.classList.add("open");
       sourcesPanel.setAttribute("aria-hidden", "false");
     }
