@@ -242,6 +242,10 @@
       display: none;
     }
 
+    .sources-button {
+      display: none;
+    }
+
     .development-button {
       display: none;
     }
@@ -263,6 +267,10 @@
     }
 
     .commemorative-button.show {
+      display: inline-flex;
+    }
+
+    .sources-button.show {
       display: inline-flex;
     }
 
@@ -388,6 +396,25 @@
 
     .image-author.show {
       display: block;
+    }
+
+    .sources-list {
+      margin: 0 0 2px;
+      padding: 14px 16px;
+      border: 1px solid rgba(29, 26, 20, 0.12);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.42);
+      color: rgba(29, 26, 20, 0.78);
+      font: 0.92rem/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      box-shadow: 0 12px 26px rgba(8, 19, 15, 0.08);
+    }
+
+    .sources-list p {
+      margin: 0;
+    }
+
+    .sources-list strong {
+      color: var(--green);
     }
 
     .image-actions {
@@ -574,6 +601,7 @@
       <button class="listen-button orden-button" type="button" id="showPueblaPardos">La Puebla de los Pardos</button>
       <button class="listen-button context-button" type="button" id="showAugust3">Decretos</button>
       <button class="listen-button commemorative-button" type="button" id="showCommemorativeActivities">Actividades Conmemorativas</button>
+      <button class="listen-button sources-button" type="button" id="showSources">Fuentes</button>
       <button class="listen-button development-button" type="button" id="showVirgin">Virgen de los Ángeles</button>
       <button class="listen-button development-button" type="button" id="showJuana">Juana Pereira</button>
       <button class="listen-button life-button" type="button" id="showSocialIntegration">Integración social y oficios</button>
@@ -606,6 +634,16 @@
       <img src="Puebla de los Pardos en la actualidad.png" alt="Imagen 3D de la Puebla de los Pardos en la actualidad">
       <div class="image-actions">
         <button class="listen-button" type="button" id="returnFromPueblaPardos">Regresar</button>
+      </div>
+    </div>
+    <div class="image-panel sources-panel" id="sourcesPanel" aria-hidden="true">
+      <h3>Fuentes consultadas para la elaboraci&oacute;n del afiche D&iacute;a de La Puebla de los Pardos</h3>
+      <div class="sources-list">
+        <p><strong>La puebla de los Pardos en el siglo XVII</strong></p>
+        <p>Autora: Rina C&aacute;ceres G&oacute;mez</p>
+      </div>
+      <div class="image-actions">
+        <button class="listen-button" type="button" id="returnFromSources">Regresar</button>
       </div>
     </div>
     <div class="video-panel" id="videoPanel" aria-hidden="true">
@@ -722,17 +760,20 @@
     const august3Author = document.querySelector("#august3Author");
     const showAugust3Button = document.querySelector("#showAugust3");
     const showCommemorativeActivitiesButton = document.querySelector("#showCommemorativeActivities");
+    const showSourcesButton = document.querySelector("#showSources");
     const showVirginButton = document.querySelector("#showVirgin");
     const showJuanaButton = document.querySelector("#showJuana");
     const showSocialIntegrationButton = document.querySelector("#showSocialIntegration");
     const juanaPanel = document.querySelector("#juanaPanel");
     const pueblaPardosPanel = document.querySelector("#pueblaPardosPanel");
+    const sourcesPanel = document.querySelector("#sourcesPanel");
     const showPueblaPardosButton = document.querySelector("#showPueblaPardos");
     const toggleAugust3AudioButton = document.querySelector("#toggleAugust3Audio");
     const returnFromAugust3Button = document.querySelector("#returnFromAugust3");
     const toggleJuanaAudioButton = document.querySelector("#toggleJuanaAudio");
     const returnFromJuanaButton = document.querySelector("#returnFromJuana");
     const returnFromPueblaPardosButton = document.querySelector("#returnFromPueblaPardos");
+    const returnFromSourcesButton = document.querySelector("#returnFromSources");
     const showVideoButton = document.querySelector("#showVideo");
     const showCaravacaVideoButton = document.querySelector("#showCaravacaVideo");
     const hotspots = document.querySelectorAll(".hotspot");
@@ -784,6 +825,11 @@
       card.classList.remove("puebla-mode");
       pueblaPardosPanel.classList.remove("open");
       pueblaPardosPanel.setAttribute("aria-hidden", "true");
+    }
+
+    function hideSourcesPanel() {
+      sourcesPanel.classList.remove("open");
+      sourcesPanel.setAttribute("aria-hidden", "true");
     }
 
     function hideAugust3Panel() {
@@ -863,6 +909,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideSourcesPanel();
       setAudioSource(zones[activeZone].audio);
       zoneAudio.load();
       zoneAudio.currentTime = 0;
@@ -889,6 +936,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideSourcesPanel();
       showVideo(video);
       videoModeActive = true;
       card.classList.add("video-mode");
@@ -944,11 +992,13 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideSourcesPanel();
       setAudioSource(zone.audio);
       zoneAudio.setAttribute("aria-label", `Audio: ${zone.title}`);
       showPueblaPardosButton.classList.toggle("show", key === "orden");
       showAugust3Button.classList.toggle("show", key === "idea");
       showCommemorativeActivitiesButton.classList.toggle("show", key === "idea");
+      showSourcesButton.classList.toggle("show", key === "idea");
       showVirginButton.classList.toggle("show", key === "desarrollo");
       showJuanaButton.classList.toggle("show", key === "desarrollo");
       showSocialIntegrationButton.classList.toggle("show", key === "vida");
@@ -968,6 +1018,7 @@
       hideAugust3Panel();
       hideJuanaPanel();
       hidePueblaPardosPanel();
+      hideSourcesPanel();
       videoModeActive = false;
       card.classList.remove("video-mode", "portrait-video");
       videoFrame.classList.remove("portrait-video");
@@ -977,6 +1028,7 @@
       showPueblaPardosButton.classList.remove("show");
       showAugust3Button.classList.remove("show");
       showCommemorativeActivitiesButton.classList.remove("show");
+      showSourcesButton.classList.remove("show");
       showVirginButton.classList.remove("show");
       showJuanaButton.classList.remove("show");
       showSocialIntegrationButton.classList.remove("show");
@@ -1025,6 +1077,7 @@
       hideVideo();
       hideAugust3Panel();
       hideJuanaPanel();
+      hideSourcesPanel();
       card.classList.add("puebla-mode");
       pueblaPardosPanel.classList.add("open");
       pueblaPardosPanel.setAttribute("aria-hidden", "false");
@@ -1037,6 +1090,28 @@
       hidePueblaPardosPanel();
       setAudioSource(zones.orden.audio);
       zoneAudio.setAttribute("aria-label", `Audio: ${zones.orden.title}`);
+      listenAgain.textContent = "Escuchar";
+    }
+
+    function showSources() {
+      if (activeZone !== "idea") return;
+
+      clearAudio();
+      hideVideo();
+      hideAugust3Panel();
+      hideJuanaPanel();
+      hidePueblaPardosPanel();
+      sourcesPanel.classList.add("open");
+      sourcesPanel.setAttribute("aria-hidden", "false");
+    }
+
+    function returnFromSources() {
+      if (activeZone !== "idea") return;
+
+      clearAudio();
+      hideSourcesPanel();
+      setAudioSource(zones.idea.audio);
+      zoneAudio.setAttribute("aria-label", `Audio: ${zones.idea.title}`);
       listenAgain.textContent = "Escuchar";
     }
 
@@ -1109,6 +1184,7 @@
         showAndPlayVideo(zones.idea.commemorativeVideo);
       }
     });
+    showSourcesButton.addEventListener("click", showSources);
     showVirginButton.addEventListener("click", () => {
       if (activeZone === "desarrollo") {
         showAndPlayVideo(zones.desarrollo.virginVideo);
@@ -1124,6 +1200,7 @@
     returnFromAugust3Button.addEventListener("click", returnFromAugust3);
     toggleJuanaAudioButton.addEventListener("click", toggleJuanaAudio);
     returnFromJuanaButton.addEventListener("click", returnFromJuana);
+    returnFromSourcesButton.addEventListener("click", returnFromSources);
     toggleVideoPlaybackButton.addEventListener("click", toggleVideoPlayback);
     returnFromVideoButton.addEventListener("click", returnFromVideoMode);
 
